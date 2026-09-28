@@ -1,1 +1,11 @@
-import dotenv from'dotenv';import{mkdir,open}from'node:fs/promises';import{spawn}from'node:child_process';dotenv.config({path:new URL('../../.env',import.meta.url),quiet:true});const directory=new URL('../../backups/',import.meta.url);await mkdir(directory,{recursive:true});const stamp=new Date().toISOString().replace(/[:.]/g,'-');const target=new URL(`fahizhub-${stamp}.sql`,directory);const file=await open(target,'w',0o600);const args=[`--host=${process.env.DB_HOST||'localhost'}`,`--port=${process.env.DB_PORT||3306}`,`--user=${process.env.DB_USER||'root'}`,'--single-transaction','--routines','--events',process.env.DB_NAME||'fahizhub'];const child=spawn('mysqldump',args,{env:{...process.env,MYSQL_PWD:process.env.DB_PASSWORD||''},stdio:['ignore',file.createWriteStream(), 'inherit']});const code=await new Promise((resolve,reject)=>{child.on('error',reject);child.on('close',resolve)});await file.close();if(code!==0)throw new Error(`mysqldump exited with code ${code}`);console.log(`Backup created: ${target.pathname}`);
+import dotenv from 'dotenv';
+import { mkdir, open } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+dotenv.config({path:new URL('../../.env',import.meta.url),quiet:true});
+const directory=new URL('../../backups/',import.meta.url);await mkdir(directory,{recursive:true});
+const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+const target=new URL(process.env.BACKUP_FILENAME||`fahizhub-${stamp}.sql`,directory);
+const file=await open(target,'w',0o600);
+const args=[`--host=${process.env.DB_HOST||'localhost'}`,`--port=${process.env.DB_PORT||3306}`,`--user=${process.env.DB_USER||'root'}`,'--single-transaction','--routines','--events',process.env.DB_NAME||'fahizhub'];
+const child=spawn('mysqldump',args,{env:{...process.env,MYSQL_PWD:process.env.DB_PASSWORD||''},stdio:['ignore',file.createWriteStream(),'inherit']});
+const code=await new Promise((resolve,reject)=>{child.on('error',reject);child.on('close',resolve)});await file.close();if(code!==0)throw new Error(`mysqldump exited with code ${code}`);console.log(`Backup created: ${target.pathname}`);

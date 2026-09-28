@@ -35,6 +35,12 @@ The production workflow is implemented locally:
 - Incremental database migrations, automated MySQL backup command, health/readiness probes, and staging containers
 - Desktop Chrome and Pixel 5 Playwright workflows in addition to unit/API tests
 - Private notification center and non-invasive page/project analytics
+- Installable PWA with offline public portfolio/resume data and calendar exports after booking
+- English/Bangla navigation, high-contrast mode, skip navigation, reduced-motion support, and route focus management
+- Rich project case studies with screenshots, demo links, architecture, outcomes, draft preview, autosave, version history, rollback, and scheduled publishing
+- Admin operations center with global search, bulk publishing, media library, email retries, analytics trends, audit logs, backup history, 2FA, and session revocation
+- Optional Google Calendar OAuth sync for confirmed meetings
+- Public AI suggested questions, portfolio source links, and helpful/not-helpful feedback
 - Frontend and backend tests, linting, and production build scripts
 
 SMTP, CAPTCHA, production URLs, and public contact links activate when their verified values are added to the environment/admin settings. Physical-device testing and deployment require access to the target staging host and phones.

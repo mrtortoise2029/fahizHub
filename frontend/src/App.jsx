@@ -1,21 +1,131 @@
-import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import AnalyticsTracker from './components/AnalyticsTracker';
-import ProtectedRoute from './components/ProtectedRoute';
-import SeoManager from './components/SeoManager';
-import { AuthProvider } from './context/AuthContext';
-import { useTheme } from './hooks/useTheme';
-import AdminLayout from './layouts/AdminLayout';
-import PublicLayout from './layouts/PublicLayout';
+import { lazy, Suspense } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import AnalyticsTracker from "./components/AnalyticsTracker";
+import ProtectedRoute from "./components/ProtectedRoute";
+import SeoManager from "./components/SeoManager";
+import { AuthProvider } from "./context/AuthContext";
+import { useTheme } from "./hooks/useTheme";
+import AdminLayout from "./layouts/AdminLayout";
+import PublicLayout from "./layouts/PublicLayout";
 
-const page=(loader)=>lazy(loader);
-const HomePage=page(()=>import('./pages/HomePage.jsx'));const ProjectsPage=page(()=>import('./pages/ProjectsPage.jsx'));const ProjectDetailPage=page(()=>import('./pages/ProjectDetailPage.jsx'));const ContentPage=page(()=>import('./pages/ContentPage.jsx'));const ContactPage=page(()=>import('./pages/ContactPage.jsx'));const MeetingPage=page(()=>import('./pages/MeetingPage.jsx'));const AboutPage=page(()=>import('./pages/AboutPage.jsx'));const SkillsPage=page(()=>import('./pages/SkillsPage.jsx'));const EducationPage=page(()=>import('./pages/EducationPage.jsx'));const ExperiencePage=page(()=>import('./pages/ExperiencePage.jsx'));const CatalogPage=page(()=>import('./pages/CatalogPage.jsx'));const ResumePage=page(()=>import('./pages/ResumePage.jsx'));const PublicAiPage=page(()=>import('./pages/PublicAiPage.jsx'));
-const LoginPage=page(()=>import('./pages/admin/LoginPage.jsx'));const DashboardPage=page(()=>import('./pages/admin/DashboardPage.jsx'));const AdminProjectsPage=page(()=>import('./pages/admin/AdminProjectsPage.jsx'));const MessagesPage=page(()=>import('./pages/admin/MessagesPage.jsx'));const TasksPage=page(()=>import('./pages/admin/TasksPage.jsx'));const MeetingsPage=page(()=>import('./pages/admin/MeetingsPage.jsx'));const StudentPage=page(()=>import('./pages/admin/StudentPage.jsx'));const LearningPage=page(()=>import('./pages/admin/LearningPage.jsx'));const AiPage=page(()=>import('./pages/admin/AiPage.jsx'));const SettingsPage=page(()=>import('./pages/admin/SettingsPage.jsx'));const CatalogAdminPage=page(()=>import('./pages/admin/CatalogAdminPage.jsx'));const AdminContentPage=page(()=>import('./pages/admin/AdminContentPage.jsx'));
+const page = (loader) => lazy(loader);
+const HomePage = page(() => import("./pages/HomePage.jsx"));
+const ProjectsPage = page(() => import("./pages/ProjectsPage.jsx"));
+const ProjectDetailPage = page(() => import("./pages/ProjectDetailPage.jsx"));
+const ContentPage = page(() => import("./pages/ContentPage.jsx"));
+const ContactPage = page(() => import("./pages/ContactPage.jsx"));
+const MeetingPage = page(() => import("./pages/MeetingPage.jsx"));
+const AboutPage = page(() => import("./pages/AboutPage.jsx"));
+const SkillsPage = page(() => import("./pages/SkillsPage.jsx"));
+const EducationPage = page(() => import("./pages/EducationPage.jsx"));
+const ExperiencePage = page(() => import("./pages/ExperiencePage.jsx"));
+const CatalogPage = page(() => import("./pages/CatalogPage.jsx"));
+const ResumePage = page(() => import("./pages/ResumePage.jsx"));
+const PublicAiPage = page(() => import("./pages/PublicAiPage.jsx"));
+const LoginPage = page(() => import("./pages/admin/LoginPage.jsx"));
+const DashboardPage = page(() => import("./pages/admin/DashboardPage.jsx"));
+const AdminProjectsPage = page(
+  () => import("./pages/admin/AdminProjectsPage.jsx"),
+);
+const MessagesPage = page(() => import("./pages/admin/MessagesPage.jsx"));
+const TasksPage = page(() => import("./pages/admin/TasksPage.jsx"));
+const MeetingsPage = page(() => import("./pages/admin/MeetingsPage.jsx"));
+const StudentPage = page(() => import("./pages/admin/StudentPage.jsx"));
+const LearningPage = page(() => import("./pages/admin/LearningPage.jsx"));
+const AiPage = page(() => import("./pages/admin/AiPage.jsx"));
+const SettingsPage = page(() => import("./pages/admin/SettingsPage.jsx"));
+const CatalogAdminPage = page(
+  () => import("./pages/admin/CatalogAdminPage.jsx"),
+);
+const AdminContentPage = page(
+  () => import("./pages/admin/AdminContentPage.jsx"),
+);
+const AdminToolsPage = page(() => import("./pages/admin/AdminToolsPage.jsx"));
 
-function NotFound(){return <ContentPage eyebrow="404" title="Page not found"><p>The page you requested does not exist.</p></ContentPage>;}
-function Loading(){return <div className="container-page py-24 text-center text-sm text-slate-500">Loading…</div>;}
+function NotFound() {
+  return (
+    <ContentPage eyebrow="404" title="Page not found">
+      <p>The page you requested does not exist.</p>
+    </ContentPage>
+  );
+}
+function Loading() {
+  return (
+    <div className="container-page py-24 text-center text-sm text-slate-500">
+      Loading…
+    </div>
+  );
+}
 
-export default function App(){
-  const{theme,toggleTheme}=useTheme();
-  return <AuthProvider><AnalyticsTracker/><SeoManager/><Suspense fallback={<Loading/>}><Routes><Route element={<PublicLayout theme={theme} toggleTheme={toggleTheme}/>}><Route index element={<HomePage/>}/><Route path="about" element={<AboutPage/>}/><Route path="projects" element={<ProjectsPage/>}/><Route path="projects/:slug" element={<ProjectDetailPage/>}/><Route path="skills" element={<SkillsPage/>}/><Route path="education" element={<EducationPage/>}/><Route path="experience" element={<ExperiencePage/>}/><Route path="services" element={<CatalogPage type="services"/>}/><Route path="achievements" element={<CatalogPage type="achievements"/>}/><Route path="resume" element={<ResumePage/>}/><Route path="ai" element={<PublicAiPage/>}/><Route path="contact" element={<ContactPage/>}/><Route path="meetings" element={<MeetingPage/>}/><Route path="*" element={<NotFound/>}/></Route><Route path="admin/login" element={<LoginPage/>}/><Route path="admin" element={<ProtectedRoute><AdminLayout/></ProtectedRoute>}><Route index element={<DashboardPage/>}/><Route path="projects" element={<AdminProjectsPage/>}/><Route path="messages" element={<MessagesPage/>}/><Route path="meetings" element={<MeetingsPage/>}/><Route path="tasks" element={<TasksPage/>}/><Route path="student" element={<StudentPage/>}/><Route path="learning" element={<LearningPage/>}/><Route path="ai" element={<AiPage/>}/><Route path="settings" element={<SettingsPage/>}/><Route path="achievements" element={<CatalogAdminPage type="achievements"/>}/><Route path="services" element={<CatalogAdminPage type="services"/>}/><Route path="education" element={<AdminContentPage type="education"/>}/><Route path="experience" element={<AdminContentPage type="experience"/>}/><Route path="skills" element={<AdminContentPage type="skills"/>}/></Route><Route path="/dashboard" element={<Navigate to="/admin" replace/>}/></Routes></Suspense></AuthProvider>;
+export default function App() {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <AuthProvider>
+      <AnalyticsTracker />
+      <SeoManager />
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route
+            element={<PublicLayout theme={theme} toggleTheme={toggleTheme} />}
+          >
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="projects" element={<ProjectsPage />} />
+            <Route path="projects/:slug" element={<ProjectDetailPage />} />
+            <Route path="skills" element={<SkillsPage />} />
+            <Route path="education" element={<EducationPage />} />
+            <Route path="experience" element={<ExperiencePage />} />
+            <Route path="services" element={<CatalogPage type="services" />} />
+            <Route
+              path="achievements"
+              element={<CatalogPage type="achievements" />}
+            />
+            <Route path="resume" element={<ResumePage />} />
+            <Route path="ai" element={<PublicAiPage />} />
+            <Route path="contact" element={<ContactPage />} />
+            <Route path="meetings" element={<MeetingPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+          <Route path="admin/login" element={<LoginPage />} />
+          <Route
+            path="admin"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path="projects" element={<AdminProjectsPage />} />
+            <Route path="messages" element={<MessagesPage />} />
+            <Route path="meetings" element={<MeetingsPage />} />
+            <Route path="tasks" element={<TasksPage />} />
+            <Route path="student" element={<StudentPage />} />
+            <Route path="learning" element={<LearningPage />} />
+            <Route path="ai" element={<AiPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="operations" element={<AdminToolsPage />} />
+            <Route
+              path="achievements"
+              element={<CatalogAdminPage type="achievements" />}
+            />
+            <Route
+              path="services"
+              element={<CatalogAdminPage type="services" />}
+            />
+            <Route
+              path="education"
+              element={<AdminContentPage type="education" />}
+            />
+            <Route
+              path="experience"
+              element={<AdminContentPage type="experience" />}
+            />
+            <Route path="skills" element={<AdminContentPage type="skills" />} />
+          </Route>
+          <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
+        </Routes>
+      </Suspense>
+    </AuthProvider>
+  );
 }

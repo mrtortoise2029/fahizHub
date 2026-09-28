@@ -8,7 +8,12 @@
   body { @apply bg-slate-50 text-slate-800 antialiased dark:bg-ink-950 dark:text-slate-200; }
   *:focus-visible { @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white dark:ring-offset-ink-950; }
   ::selection { @apply bg-brand-100 text-brand-700; }
+  .high-contrast body { @apply bg-white text-black dark:bg-black dark:text-white; }
 }
+
+.high-contrast a { text-decoration: underline; text-underline-offset: 3px; }
+.skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 100; padding: .75rem 1rem; border-radius: .5rem; background: #fff; color: #000; }
+.skip-link:focus { top: 1rem; }
 
 @layer components {
   .container-page { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
@@ -22,4 +27,3 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
-

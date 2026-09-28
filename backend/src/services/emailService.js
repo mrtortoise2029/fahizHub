@@ -7,9 +7,9 @@ const transporter=configured?nodemailer.createTransport({host:env.SMTP_HOST,port
 
 export async function sendEmail({to,subject,text}){
   if(!to)return false;
-  if(!transporter){await db.execute("INSERT INTO email_log(recipient,subject,status,error_message) VALUES(?,?,'skipped','SMTP is not configured')",[to,subject]);return false;}
-  try{await transporter.sendMail({from:env.EMAIL_FROM,to,subject,text});await db.execute("INSERT INTO email_log(recipient,subject,status) VALUES(?,?,'sent')",[to,subject]);return true;}
-  catch(error){await db.execute("INSERT INTO email_log(recipient,subject,status,error_message) VALUES(?,?,'failed',?)",[to,subject,error.message]);return false;}
+  if(!transporter){await db.execute("INSERT INTO email_log(recipient,subject,body,status,error_message,last_attempt_at) VALUES(?,?,?,'skipped','SMTP is not configured',UTC_TIMESTAMP())",[to,subject,text]);return false;}
+  try{await transporter.sendMail({from:env.EMAIL_FROM,to,subject,text});await db.execute("INSERT INTO email_log(recipient,subject,body,status,last_attempt_at) VALUES(?,?,?,'sent',UTC_TIMESTAMP())",[to,subject,text]);return true;}
+  catch(error){await db.execute("INSERT INTO email_log(recipient,subject,body,status,error_message,last_attempt_at) VALUES(?,?,?,'failed',?,UTC_TIMESTAMP())",[to,subject,text,error.message]);return false;}
 }
 
 export async function sendAdminEmail(message){
