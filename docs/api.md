@@ -18,5 +18,12 @@ Implemented foundation endpoints:
 - `GET /content/skills` — list published skills grouped by category
 - `GET /content/education` — list published education records
 - `GET /content/experience` — list published experience and leadership records
+- `POST /messages` — submit the rate-limited public contact form
+- `GET /messages` and `GET /messages/:id` — authenticated inbox
+- `PATCH /messages/:id/status` and `DELETE /messages/:id` — manage inbox messages
+- `POST /meetings` — request a meeting with UTC start/end times
+- `GET /meetings` and `PATCH /meetings/:id` — authenticated meeting management
+- `GET /tasks`, `POST /tasks`, `PUT /tasks/:id`, `DELETE /tasks/:id` — authenticated task workflow
+- `GET /tasks/categories` — configured task categories
 
 API responses use `{ success, data }` for success and `{ success: false, message, errors? }` for errors. Private CRUD endpoints will require authentication and feature-specific validation.
