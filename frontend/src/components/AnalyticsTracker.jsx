@@ -1,0 +1,1 @@
+import{useEffect}from'react';import{useLocation}from'react-router-dom';import{api}from'../services/api';export default function AnalyticsTracker(){const{pathname}=useLocation();useEffect(()=>{if(!pathname.startsWith('/admin'))api.post('/analytics',{event_type:pathname.startsWith('/projects/')?'project_view':'page_view',path:pathname}).catch(()=>{})},[pathname]);return null}

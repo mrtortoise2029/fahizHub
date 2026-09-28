@@ -25,6 +25,8 @@ Phase 1 foundation and the public content portion of Phase 2 are implemented:
 - Admin-controlled public achievements and services with honest empty states
 - Database-generated resume view with browser PDF export
 - Admin management for education, experience, and categorized skills
+- Configurable weekly meeting availability with generated slots and overlap prevention
+- Private notification center and non-invasive page/project analytics
 - Frontend and backend tests, linting, and production build scripts
 
 The feature-rich CRUD modules listed in the product brief remain incremental work. Placeholder admin pages are deliberately empty rather than showing fake analytics or content.
