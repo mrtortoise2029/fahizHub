@@ -28,6 +28,7 @@ Implemented foundation endpoints:
 - `/student/courses` and `/student/assignments` — authenticated student workflows
 - `/learning` — authenticated learning-goal CRUD
 - `/ai` and `/ai/:id/messages` — authenticated conversation history and Gemini chat
+- `POST /public-ai/chat` — rate-limited public Gemini chat without private context or stored admin history
 - `GET /dashboard` — real workspace summaries
 - `GET/PUT /settings` — authenticated public-profile settings
 - `/catalog/achievements` and `/catalog/services` — public listings with authenticated management

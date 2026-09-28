@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import Logo from './Logo';
 
-const links = [['About', '/about'], ['Projects', '/projects'], ['Skills', '/skills'], ['Experience', '/experience'], ['Services', '/services'], ['Resume', '/resume'], ['Contact', '/contact']];
+const links = [['About', '/about'], ['Projects', '/projects'], ['Skills', '/skills'], ['Experience', '/experience'], ['Services', '/services'], ['AI', '/ai'], ['Resume', '/resume'], ['Contact', '/contact']];
 
 export default function PublicHeader({ theme, toggleTheme }) {
   const [open, setOpen] = useState(false);
@@ -32,4 +32,3 @@ export default function PublicHeader({ theme, toggleTheme }) {
     </nav>}
   </header>;
 }
-

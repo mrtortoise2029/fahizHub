@@ -21,6 +21,7 @@ Phase 1 foundation and the public content portion of Phase 2 are implemented:
 - Student Center for courses and assignments, backed by MySQL
 - Learning goals with admin-controlled status, target date, and progress
 - Fahiz AI conversation history, server-side Gemini integration, and opt-in personal context
+- Public Fahiz AI chat at `/ai`, isolated from all private admin data and rate-limited per visitor
 - Live dashboard summaries and editable public profile settings
 - Admin-controlled public achievements and services with honest empty states
 - Database-generated resume view with browser PDF export
