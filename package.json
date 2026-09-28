@@ -7,10 +7,10 @@
     "dev": "concurrently -n web,api -c blue,green \"npm run dev -w frontend\" \"npm run dev -w backend\"",
     "build": "npm run build -w frontend",
     "test": "npm run test -w frontend && npm run test -w backend",
-    "lint": "npm run lint -w frontend && npm run lint -w backend"
+    "lint": "npm run lint -w frontend && npm run lint -w backend",
+    "staging:preflight": "node scripts/stagingPreflight.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
   }
 }
-

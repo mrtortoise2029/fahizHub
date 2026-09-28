@@ -6,6 +6,8 @@ Use a host with Docker Compose, a DNS name, HTTPS termination, and persistent st
 
 Do not copy the development `.env` to a server or commit `.env.staging`.
 
+Run `npm run staging:preflight` before a release. It checks that Docker Compose is available, required secrets/integrations are configured, URLs use HTTPS, and obvious placeholder values have been removed without printing any secrets.
+
 ## Release workflow
 
 ```bash
