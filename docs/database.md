@@ -6,3 +6,4 @@ Run `npm run db:setup -w backend` after configuring `.env`. This applies the bas
 
 Further migrations will add student-center, learning-resource, achievement, certification, service, analytics, and upload metadata tables as their phases are implemented.
 
+Migration `002_productivity_content.sql` adds courses, assignments, learning goals/resources, achievements, services, and privacy-conscious analytics events.
