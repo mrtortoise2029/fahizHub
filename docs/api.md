@@ -31,5 +31,6 @@ Implemented foundation endpoints:
 - `GET /dashboard` — real workspace summaries
 - `GET/PUT /settings` — authenticated public-profile settings
 - `/catalog/achievements` and `/catalog/services` — public listings with authenticated management
+- `/admin-content/education`, `/admin-content/experience`, and `/admin-content/skills` — authenticated portfolio content management
 
 API responses use `{ success, data }` for success and `{ success: false, message, errors? }` for errors. Private CRUD endpoints will require authentication and feature-specific validation.

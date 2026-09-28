@@ -23,6 +23,8 @@ Phase 1 foundation and the public content portion of Phase 2 are implemented:
 - Fahiz AI conversation history, server-side Gemini integration, and opt-in personal context
 - Live dashboard summaries and editable public profile settings
 - Admin-controlled public achievements and services with honest empty states
+- Database-generated resume view with browser PDF export
+- Admin management for education, experience, and categorized skills
 - Frontend and backend tests, linting, and production build scripts
 
 The feature-rich CRUD modules listed in the product brief remain incremental work. Placeholder admin pages are deliberately empty rather than showing fake analytics or content.
