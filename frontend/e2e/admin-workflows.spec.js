@@ -11,6 +11,10 @@ test('admin can create, edit, and clean up core productivity workflows',async({p
   await page.getByLabel('Password').fill(process.env.ADMIN_PASSWORD);
   await page.getByRole('button',{name:'Sign in'}).click();
   await expect(page).toHaveURL(/\/admin$/);
+  for(const label of ['Overdue tasks','Pending meetings','Unread messages','Published projects']){
+    const card=page.locator('section').filter({has:page.getByRole('heading',{name:label})});
+    await expect(card.locator('p')).toHaveText(/^\d+$/);
+  }
 
   const api=page.context().request;const ids={projects:[],goals:[],resources:[],tasks:[],courses:[],grades:[],rules:[],blocks:[]};
   const json=async(response,label)=>{const text=await response.text();expect(response.ok(),`${label}: ${response.status()} ${text}`).toBeTruthy();return response.status()===204?null:JSON.parse(text);};
@@ -42,7 +46,7 @@ test('admin can create, edit, and clean up core productivity workflows',async({p
     body=await json(await api.post(`${apiBase}/api/meetings/blocked-slots`,{data:{start_time:start.toISOString(),end_time:end.toISOString(),reason:'E2E verification'}}),'create meeting block');ids.blocks.push(body.data.id);
 
     await page.goto('/admin/learning');await expect(page.getByRole('heading',{name:'E2E learning goal edited'})).toBeVisible();await expect(page.getByText('E2E resource edited',{exact:true})).toBeVisible();
-    await page.goto('/admin/tasks');await expect(page.getByText(task.title).first()).toBeVisible();
+    await page.goto('/admin/tasks');await expect(page.getByText(task.title,{exact:true}).first()).toBeVisible({timeout:10000});
   }finally{
     for(const id of ids.resources.reverse())await api.delete(`${apiBase}/api/learning/resources/${id}`);
     for(const id of ids.goals.reverse())await api.delete(`${apiBase}/api/learning/${id}`);
