@@ -14,6 +14,7 @@ Phase 1 foundation and the public content portion of Phase 2 are implemented:
 - Admin login, protected routes, dashboard, navigation, honest empty states, light/dark mode
 - Database-backed profile, projects, skills, education, and experience pages
 - Loading, empty, and API error states across public dynamic content
+- Authenticated project create, edit, publish/draft, and delete workflow in the responsive admin dashboard
 - Frontend and backend tests, linting, and production build scripts
 
 The feature-rich CRUD modules listed in the product brief remain incremental work. Placeholder admin pages are deliberately empty rather than showing fake analytics or content.
