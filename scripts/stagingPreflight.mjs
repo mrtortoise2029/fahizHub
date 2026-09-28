@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
 const file='.env.staging';
-if(!existsSync(file)){console.error('Missing .env.staging. Copy .env.example and supply staging-only values.');process.exit(1);}
+if(!existsSync(file)){console.error('Missing .env.staging. Copy .env.staging.example and supply staging-only values.');process.exit(1);}
 const values={};
 for(const raw of readFileSync(file,'utf8').split(/\r?\n/)){
   const line=raw.trim();if(!line||line.startsWith('#')||!line.includes('='))continue;
@@ -11,7 +11,7 @@ for(const raw of readFileSync(file,'utf8').split(/\r?\n/)){
   values[key]=value;
 }
 const required=['DB_PASSWORD','MYSQL_ROOT_PASSWORD','JWT_SECRET','ADMIN_EMAIL','ADMIN_PASSWORD','CLIENT_URL','STAGING_URL','GEMINI_API_KEY','SMTP_HOST','SMTP_USER','SMTP_PASSWORD','EMAIL_FROM','TURNSTILE_SECRET_KEY','VITE_TURNSTILE_SITE_KEY'];
-const missing=required.filter((key)=>!values[key]||/replace|change-this|example\.com/i.test(values[key]));
+const missing=required.filter((key)=>!values[key]||/replace|change-this|example\.(com|org|net)|\.example\b|your-domain/i.test(values[key]));
 const errors=[];
 if(missing.length)errors.push(`Missing or placeholder values: ${missing.join(', ')}`);
 for(const key of ['CLIENT_URL','STAGING_URL'])if(values[key]&&!values[key].startsWith('https://'))errors.push(`${key} must use HTTPS.`);

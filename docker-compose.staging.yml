@@ -44,6 +44,7 @@ services:
       dockerfile: frontend/Dockerfile
       args:
         VITE_SITE_URL: ${STAGING_URL}
+        VITE_TURNSTILE_SITE_KEY: ${VITE_TURNSTILE_SITE_KEY}
     restart: unless-stopped
     ports:
       - "8080:80"

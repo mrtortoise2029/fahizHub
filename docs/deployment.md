@@ -2,7 +2,7 @@
 
 ## Staging prerequisites
 
-Use a host with Docker Compose, a DNS name, HTTPS termination, and persistent storage. Copy `.env.example` to `.env.staging` on the host and set unique staging secrets. Required values include database credentials, `JWT_SECRET`, admin credentials, `CLIENT_URL`, `STAGING_URL`, and `VITE_SITE_URL`. For complete workflows also configure SMTP and Cloudflare Turnstile keys.
+Use a host with Docker Compose, a DNS name, HTTPS termination, and persistent storage. Copy `.env.staging.example` to `.env.staging` on the host and set unique staging secrets. Required values include database credentials, `JWT_SECRET`, admin credentials, `CLIENT_URL`, and `STAGING_URL`. For complete workflows also configure SMTP and Cloudflare Turnstile keys. The Compose build passes the public Turnstile key into the frontend image.
 
 Do not copy the development `.env` to a server or commit `.env.staging`.
 
