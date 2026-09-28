@@ -3,15 +3,22 @@ import { z } from 'zod';
 import { env } from '../config/env.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { verifyTurnstile } from '../middleware/turnstile.js';
+import { db } from '../config/database.js';
+import { createHash } from 'node:crypto';
 
 const router = Router();
 const messageSchema = z.object({
-  message: z.string().trim().min(1).max(6000),
-  history: z.array(z.object({ role: z.enum(['user', 'assistant']), content: z.string().max(6000) })).max(12).default([]),
+  message: z.string().trim().min(1).max(2000),
+  history: z.array(z.object({ role: z.enum(['user', 'assistant']), content: z.string().max(2000) })).max(6).default([]),
 });
 
-router.post('/chat', validate(messageSchema), asyncHandler(async (req, res) => {
+router.post('/chat', verifyTurnstile, validate(messageSchema), asyncHandler(async (req, res) => {
   if (!env.GEMINI_API_KEY) return res.status(503).json({ success: false, message: 'The AI assistant is temporarily unavailable.' });
+  const visitorHash=createHash('sha256').update(`${req.ip}:${req.get('user-agent')||''}:${env.JWT_SECRET}`).digest('hex');
+  await db.execute('INSERT INTO public_ai_usage(visitor_hash,request_date,request_count) VALUES(?,CURRENT_DATE,1) ON DUPLICATE KEY UPDATE request_count=request_count+1',[visitorHash]);
+  const[[usage]]=await db.execute('SELECT request_count FROM public_ai_usage WHERE visitor_hash=? AND request_date=CURRENT_DATE',[visitorHash]);
+  if(usage.request_count>env.PUBLIC_AI_DAILY_LIMIT)return res.status(429).json({success:false,message:'Daily public AI limit reached. Please try again tomorrow.'});
   const transcript = [...req.validated.history, { role: 'user', content: req.validated.message }]
     .map((item) => `${item.role === 'assistant' ? 'Assistant' : 'User'}: ${item.content}`)
     .join('\n\n');

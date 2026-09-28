@@ -28,3 +28,7 @@ SELECT p.id,s.id FROM projects p JOIN skills s WHERE
   (p.slug='the-last-defenders' AND s.name IN ('Java'))
 ON DUPLICATE KEY UPDATE skill_id=VALUES(skill_id);
 INSERT IGNORE INTO task_categories(name) VALUES ('University'),('Project'),('Career'),('HR'),('Learning'),('Personal'),('Important');
+INSERT INTO app_settings(setting_key,setting_value) VALUES
+('public_email','fahizahmed18@gmail.com'),
+('github_url','https://github.com/mrtortoise2029')
+ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value);

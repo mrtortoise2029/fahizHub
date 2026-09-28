@@ -4,6 +4,8 @@ The initial migration lives in `database/migrations/001_initial_schema.sql`. It 
 
 Run `npm run db:setup -w backend` after configuring `.env`. This applies the base migration, adds only the supplied profile/project data, hashes the configured admin password with bcrypt, and creates the admin account.
 
-Further migrations will add student-center, learning-resource, achievement, certification, service, analytics, and upload metadata tables as their phases are implemented.
-
 Migration `002_productivity_content.sql` adds courses, assignments, learning goals/resources, achievements, services, and privacy-conscious analytics events.
+
+Migration `003_production_workflows.sql` adds secure upload metadata, grading rules and grade entries, meeting exclusions, public settings, email delivery logs, and public-AI daily usage counters.
+
+Use `npm run db:migrate -w backend` for repeatable incremental migrations. Applied filenames and checksums are stored in `schema_migrations`.

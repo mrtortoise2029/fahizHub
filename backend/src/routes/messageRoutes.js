@@ -4,12 +4,13 @@ import { db } from '../config/database.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { verifyTurnstile } from '../middleware/turnstile.js';
+import { sendAdminEmail } from '../services/emailService.js';
 const router=Router();
 const messageSchema=z.object({name:z.string().trim().min(2).max(120),email:z.email(),subject:z.string().trim().min(3).max(255),message:z.string().trim().min(10).max(5000)});
-router.post('/',validate(messageSchema),asyncHandler(async(req,res)=>{const m=req.validated;const [result]=await db.execute('INSERT INTO messages(name,email,subject,message) VALUES (?,?,?,?)',[m.name,m.email,m.subject,m.message]);await db.execute("INSERT INTO notifications(type,title,body,entity_type,entity_id) VALUES ('message','New contact message',?,'message',?)",[m.subject,result.insertId]);res.status(201).json({success:true,message:'Your message has been sent successfully.'})}));
+router.post('/',verifyTurnstile,validate(messageSchema),asyncHandler(async(req,res)=>{const m=req.validated;const [result]=await db.execute('INSERT INTO messages(name,email,subject,message) VALUES (?,?,?,?)',[m.name,m.email,m.subject,m.message]);await db.execute("INSERT INTO notifications(type,title,body,entity_type,entity_id) VALUES ('message','New contact message',?,'message',?)",[m.subject,result.insertId]);await sendAdminEmail({subject:`New portfolio message: ${m.subject}`,text:`From: ${m.name} <${m.email}>\n\n${m.message}`});res.status(201).json({success:true,message:'Your message has been sent successfully.'})}));
 router.get('/',requireAuth,asyncHandler(async(req,res)=>{const [rows]=await db.query('SELECT id,name,email,subject,status,created_at FROM messages ORDER BY created_at DESC');res.json({success:true,data:rows})}));
 router.get('/:id',requireAuth,asyncHandler(async(req,res)=>{const [[row]]=await db.execute('SELECT * FROM messages WHERE id=?',[req.params.id]);if(!row)return res.status(404).json({success:false,message:'Message not found.'});res.json({success:true,data:row})}));
 router.patch('/:id/status',requireAuth,validate(z.object({status:z.enum(['new','read','archived'])})),asyncHandler(async(req,res)=>{const [result]=await db.execute('UPDATE messages SET status=? WHERE id=?',[req.validated.status,req.params.id]);if(!result.affectedRows)return res.status(404).json({success:false,message:'Message not found.'});res.json({success:true})}));
 router.delete('/:id',requireAuth,asyncHandler(async(req,res)=>{const [result]=await db.execute('DELETE FROM messages WHERE id=?',[req.params.id]);if(!result.affectedRows)return res.status(404).json({success:false,message:'Message not found.'});res.status(204).end()}));
 export default router;
-

@@ -1,29 +1,34 @@
 import { Bot, RotateCcw, Send } from 'lucide-react';
 import { useState } from 'react';
 import { api } from '../services/api';
+import TurnstileWidget, { captchaEnabled } from '../components/TurnstileWidget';
 
 export default function PublicAiPage() {
   const [messages, setMessages] = useState([]);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [captcha, setCaptcha] = useState('');
+  const [captchaVersion, setCaptchaVersion] = useState(0);
 
   async function send(event) {
     event.preventDefault();
     const form = event.currentTarget;
     const message = new FormData(form).get('message')?.trim();
     if (!message) return;
-    const history = messages.slice(-12);
+    const history = messages.slice(-6);
     setMessages((items) => [...items, { role: 'user', content: message }]);
     form.reset();
     setSending(true);
     setError('');
     try {
-      const { data } = await api.post('/public-ai/chat', { message, history });
+      const { data } = await api.post('/public-ai/chat', { message, history, captcha_token: captcha });
       setMessages((items) => [...items, data.data]);
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Fahiz AI is temporarily unavailable.');
     } finally {
       setSending(false);
+      setCaptcha('');
+      setCaptchaVersion((value) => value + 1);
     }
   }
 
@@ -39,9 +44,9 @@ export default function PublicAiPage() {
         {sending && <div className="max-w-3xl rounded-xl bg-slate-100 p-4 text-sm text-slate-500 dark:bg-ink-800">Thinking…</div>}
         {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300" role="alert">{error}</p>}
       </div>
-      <form className="flex gap-2 border-t border-slate-200 p-4 dark:border-slate-800" onSubmit={send}>
-        <textarea name="message" required rows="2" maxLength="6000" placeholder="Ask Fahiz AI…" className="min-h-12 flex-1 resize-none rounded-lg border border-slate-300 bg-transparent p-3 dark:border-slate-700"/>
-        <button className="button-primary self-end px-4" disabled={sending} aria-label="Send message"><Send size={18}/><span className="hidden sm:inline">Send</span></button>
+      <form className="border-t border-slate-200 p-4 dark:border-slate-800" onSubmit={send}>
+        <TurnstileWidget key={captchaVersion} onToken={setCaptcha}/><div className="mt-2 flex gap-2"><textarea name="message" required rows="2" maxLength="2000" placeholder="Ask Fahiz AI…" className="min-h-12 flex-1 resize-none rounded-lg border border-slate-300 bg-transparent p-3 dark:border-slate-700"/>
+        <button className="button-primary self-end px-4" disabled={sending||(captchaEnabled&&!captcha)} aria-label="Send message"><Send size={18}/><span className="hidden sm:inline">Send</span></button></div>
       </form>
       <p className="border-t border-slate-100 px-4 py-3 text-xs text-slate-500 dark:border-slate-800">Public chats do not access Fahiz’s private tasks, messages, meetings, or admin conversation history.</p>
     </div>

@@ -17,4 +17,6 @@ export default [
   },
   { files: ['**/*.test.{js,jsx}'], languageOptions: { globals: globals.jest } },
   { files: ['src/context/**/*.jsx'], rules: { 'react-refresh/only-export-components': 'off' } },
+  { files: ['scripts/**/*.js', 'playwright.config.js'], languageOptions: { globals: globals.node } },
+  { files: ['src/components/TurnstileWidget.jsx'], rules: { 'react-refresh/only-export-components': 'off' } },
 ];

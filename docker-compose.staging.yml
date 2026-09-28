@@ -1,0 +1,25 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: fahizhub
+      MYSQL_USER: fahizhub
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes: [mysql_data:/var/lib/mysql]
+    healthcheck: { test: ["CMD", "mysqladmin", "ping", "-h", "localhost"], interval: 10s, timeout: 5s, retries: 10 }
+  api:
+    build: { context: ., dockerfile: backend/Dockerfile }
+    restart: unless-stopped
+    env_file: .env.staging
+    environment: { DB_HOST: db, DB_PORT: 3306, DB_NAME: fahizhub, DB_USER: fahizhub, STORAGE_PATH: /app/uploads }
+    volumes: [uploads:/app/uploads]
+    depends_on: { db: { condition: service_healthy } }
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/ready"], interval: 30s, timeout: 5s, retries: 5 }
+  web:
+    build: { context: ., dockerfile: frontend/Dockerfile, args: { VITE_SITE_URL: ${STAGING_URL} } }
+    restart: unless-stopped
+    ports: ["8080:80"]
+    depends_on: { api: { condition: service_healthy } }
+volumes: { mysql_data: {}, uploads: {} }

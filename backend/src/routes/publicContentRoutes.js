@@ -5,7 +5,10 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 const router = Router();
 
 router.get('/profile', asyncHandler(async (req, res) => {
-  const [rows] = await db.query(`SELECT u.name, p.headline, p.hero_title, p.hero_subtitle, p.short_bio, p.long_bio, p.current_focus, p.profile_image_url, p.timezone
+  const [rows] = await db.query(`SELECT u.name, p.headline, p.hero_title, p.hero_subtitle, p.short_bio, p.long_bio, p.current_focus, p.profile_image_url, p.timezone,
+    (SELECT setting_value FROM app_settings WHERE setting_key='public_email') public_email,
+    (SELECT setting_value FROM app_settings WHERE setting_key='github_url') github_url,
+    (SELECT setting_value FROM app_settings WHERE setting_key='linkedin_url') linkedin_url
     FROM profile p JOIN users u ON u.id = p.user_id LIMIT 1`);
   if (!rows[0]) return res.status(404).json({ success: false, message: 'Profile content has not been configured yet.' });
   res.json({ success: true, data: rows[0] });

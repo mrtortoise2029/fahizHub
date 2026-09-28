@@ -4,7 +4,7 @@ FahizHub is Fahiz Ahmed's public professional portfolio and private productivity
 
 ## Current phase
 
-Phase 1 foundation and the public content portion of Phase 2 are implemented:
+The production workflow is implemented locally:
 
 - React/Vite/Tailwind public experience with responsive phone, tablet, laptop, and desktop layouts
 - Mobile-first public navigation and an off-canvas mobile admin dashboard
@@ -18,19 +18,26 @@ Phase 1 foundation and the public content portion of Phase 2 are implemented:
 - Working public contact form with private inbox, read/archive/delete actions, and email reply link
 - Public one-hour meeting requests with UTC storage, collision prevention, and admin status management
 - Private task creation, editing, completion, priorities, categories, due dates, and deletion
-- Student Center for courses and assignments, backed by MySQL
-- Learning goals with admin-controlled status, target date, and progress
+- Student Center with editable courses and assignments, configurable grading rules, grade entries, and GPA calculation
+- Editable learning goals and linked learning resources
 - Fahiz AI conversation history, server-side Gemini integration, and opt-in personal context
 - Public Fahiz AI chat at `/ai`, isolated from all private admin data and rate-limited per visitor
 - Live dashboard summaries and editable public profile settings
 - Admin-controlled public achievements and services with honest empty states
 - Database-generated resume view with browser PDF export
 - Admin management for education, experience, and categorized skills
-- Configurable weekly meeting availability with generated slots and overlap prevention
+- Configurable weekly meeting availability, unavailable dates, blocked slots, generated slots, and overlap prevention
+- Project image, certificate, and CV uploads with authenticated validation and metadata
+- Recurring daily, weekly, and monthly tasks
+- SMTP-backed contact and meeting notifications with a delivery audit log
+- Dynamic page metadata, Open Graph/Twitter tags, sitemap, and robots generation
+- Cloudflare Turnstile support and database-backed daily quotas for public AI
+- Incremental database migrations, automated MySQL backup command, health/readiness probes, and staging containers
+- Desktop Chrome and Pixel 5 Playwright workflows in addition to unit/API tests
 - Private notification center and non-invasive page/project analytics
 - Frontend and backend tests, linting, and production build scripts
 
-The feature-rich CRUD modules listed in the product brief remain incremental work. Placeholder admin pages are deliberately empty rather than showing fake analytics or content.
+SMTP, CAPTCHA, production URLs, and public contact links activate when their verified values are added to the environment/admin settings. Physical-device testing and deployment require access to the target staging host and phones.
 
 ## Structure
 
@@ -60,10 +67,13 @@ Never commit `.env`. The initial admin user is generated from `ADMIN_EMAIL` and 
 npm run lint
 npm run test
 npm run build
+npm run test:e2e -w frontend
+npm run db:migrate -w backend
+npm run db:backup -w backend
 ```
 
 ## Mobile and desktop support
 
 Both the public site and private dashboard are designed for 360px, 390px, 768px, 1024px, and 1440px widths. Interactive controls use touch-friendly sizing, dense rows become stacked mobile cards, filter controls can scroll horizontally, and the desktop admin sidebar becomes a mobile drawer.
 
-See [architecture](docs/architecture.md), [database](docs/database.md), [API](docs/api.md), and [deployment](docs/deployment.md).
+See [architecture](docs/architecture.md), [database](docs/database.md), [API](docs/api.md), [deployment](docs/deployment.md), and [operations](docs/operations.md).
