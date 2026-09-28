@@ -1,0 +1,10 @@
+USE fahizhub;
+INSERT INTO skill_categories(name,display_order) VALUES ('Languages',1),('Frontend',2),('Backend',3),('Database',4),('Mapping / Data',5),('Tools',6),('Testing',7);
+INSERT INTO education(institution,degree,status,credits_completed,cgpa,is_published) VALUES ('United International University (UIU)','Bachelor of Science in Computer Science and Engineering','3rd year student',62,3.49,TRUE);
+INSERT INTO experience(organization,title,previous_title,description,is_published) VALUES ('UIU Computer Club','Head of HR','Senior Executive, HR','Leading HR-related activities with a focus on team coordination, member engagement, task management, organizational communication, and improving internal workflow.',TRUE);
+INSERT INTO projects(slug,title,subtitle,short_description,category,status,github_url,is_published,display_order) VALUES
+('citymind','CityMind','AI Urban Planning Decision Support System','A smart city planning platform designed to help users plan and analyze a selected urban area using interactive maps, spatial data, urban planning rules, and intelligent recommendations.','AI · Full Stack','Active','https://github.com/mrtortoise2029/mrtortoise2029-CityMind--A-Smart-City-Planner',TRUE,1),
+('retrade','ReTrade','A Second-Hand Marketplace Auction Platform','A second-hand marketplace and auction platform designed for users to list, discover, and interact with pre-owned products.','Web · Academic','Completed','https://github.com/mrtortoise2029/ReTrade-A-Second-Hand-Marketplace-Auction-Platform',TRUE,2),
+('the-last-defenders','The Last Defenders','Multiplayer Survival Strategy Game','A JavaFX-based multiplayer survival and strategy game with board-based gameplay, player health, money, dice mechanics, AI players, and multiplayer-oriented game flow.','Java · Academic','Completed','https://github.com/mrtortoise2029/The_Last_Defender_Monopoly',TRUE,3);
+INSERT INTO task_categories(name) VALUES ('University'),('Project'),('Career'),('HR'),('Learning'),('Personal'),('Important');
+

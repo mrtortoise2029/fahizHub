@@ -1,0 +1,22 @@
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { useTheme } from './hooks/useTheme';
+import PublicLayout from './layouts/PublicLayout';
+import AdminLayout from './layouts/AdminLayout';
+import ProtectedRoute from './components/ProtectedRoute';
+import HomePage from './pages/HomePage';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectDetailPage from './pages/ProjectDetailPage';
+import ContentPage from './pages/ContentPage';
+import ContactPage from './pages/ContactPage';
+import MeetingPage from './pages/MeetingPage';
+import LoginPage from './pages/admin/LoginPage';
+import DashboardPage from './pages/admin/DashboardPage';
+import EmptyAdminPage from './pages/admin/EmptyAdminPage';
+
+function About(){return <ContentPage eyebrow="About" title="Growing through practical software development"><p>I am a Computer Science and Engineering student at United International University with a strong interest in software engineering, full-stack development, problem solving, and practical technology.</p><p>Currently focused on becoming a stronger software engineer through practical development, problem solving, system design, testing, and real-world project experience.</p></ContentPage>}
+function Simple({type}){const copy={skills:'Skills are organized by category and connected to real projects—without artificial proficiency percentages.',experience:'Leadership at UIU Computer Club, currently serving as Head of HR after previously serving as Senior Executive, HR.',services:'Available for conversations about web development, frontend, backend, database design, and technical projects.',resume:'A database-driven professional resume and downloadable CV will be available here.'};return <ContentPage eyebrow="Professional profile" title={type[0].toUpperCase()+type.slice(1)}><p>{copy[type]}</p></ContentPage>}
+function NotFound(){return <ContentPage eyebrow="404" title="Page not found"><p>The page you requested does not exist.</p></ContentPage>}
+
+export default function App(){const {theme,toggleTheme}=useTheme();return <AuthProvider><Routes><Route element={<PublicLayout theme={theme} toggleTheme={toggleTheme}/>}><Route index element={<HomePage/>}/><Route path="about" element={<About/>}/><Route path="projects" element={<ProjectsPage/>}/><Route path="projects/:slug" element={<ProjectDetailPage/>}/>{['skills','experience','services','resume'].map((type)=><Route path={type} element={<Simple type={type}/>} key={type}/>)}<Route path="contact" element={<ContactPage/>}/><Route path="meetings" element={<MeetingPage/>}/><Route path="*" element={<NotFound/>}/></Route><Route path="admin/login" element={<LoginPage/>}/><Route path="admin" element={<ProtectedRoute><AdminLayout/></ProtectedRoute>}><Route index element={<DashboardPage/>}/>{['projects','messages','meetings','tasks','ai','education','experience','skills','learning','settings'].map((path)=><Route path={path} element={<EmptyAdminPage/>} key={path}/>)}</Route><Route path="/dashboard" element={<Navigate to="/admin" replace/>}/></Routes></AuthProvider>}
+

@@ -1,0 +1,14 @@
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { rateLimit } from 'express-rate-limit';
+import { env } from './config/env.js';
+import authRoutes from './routes/authRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
+import { errorHandler, notFound } from './middleware/errorHandler.js';
+export const app=express();
+app.set('trust proxy',1);app.use(helmet());app.use(cors({origin:env.CLIENT_URL,credentials:true}));app.use(express.json({limit:'1mb'}));app.use(cookieParser());
+app.get('/api/health',(req,res)=>res.json({success:true,data:{status:'ok',service:'fahizhub-api'}}));
+app.use('/api/auth',rateLimit({windowMs:15*60*1000,limit:25,standardHeaders:'draft-8',legacyHeaders:false}),authRoutes);app.use('/api/projects',projectRoutes);app.use(notFound);app.use(errorHandler);
+
