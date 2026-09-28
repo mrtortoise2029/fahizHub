@@ -8,4 +8,6 @@ Migration `002_productivity_content.sql` adds courses, assignments, learning goa
 
 Migration `003_production_workflows.sql` adds secure upload metadata, grading rules and grade entries, meeting exclusions, public settings, email delivery logs, and public-AI daily usage counters.
 
+Migration `004_gpa_marks.sql` adds stored numeric marks so configurable grade ranges can resolve labels and grade points automatically.
+
 Use `npm run db:migrate -w backend` for repeatable incremental migrations. Applied filenames and checksums are stored in `schema_migrations`.

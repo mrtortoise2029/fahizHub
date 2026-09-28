@@ -18,7 +18,7 @@ docker compose --env-file .env.staging -f docker-compose.staging.yml ps
 
 The web container exposes port 8080. Put it behind an HTTPS reverse proxy. The included Nginx configuration serves the React application and proxies `/api` and `/uploads` to the API container.
 
-Verify `/api/health`, `/api/ready`, `robots.txt`, and `sitemap.xml`, then run Playwright against the staging URL by overriding `PLAYWRIGHT_BASE_URL`. Test login, all CRUD modules, uploads, contact delivery, booking/confirmation email, CAPTCHA, AI quotas, and responsive layouts before promoting the release.
+Verify `/api/health`, `/api/ready`, `robots.txt`, and the database-backed `sitemap.xml`, then run Playwright against the staging URL by overriding `PLAYWRIGHT_BASE_URL`. Test login, all CRUD modules, uploads, contact delivery, booking/confirmation email, CAPTCHA, AI quotas, and responsive layouts before promoting the release.
 
 ## Physical phone checklist
 

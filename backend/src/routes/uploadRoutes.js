@@ -44,6 +44,11 @@ const handleUpload = asyncHandler(async (req, res) => {
     const [[entity]] = await db.query(`SELECT id FROM ${table} WHERE id=?`, [entityId]);
     if (!entity) return res.status(404).json({ success: false, message: 'The related record was not found.' });
   }
+  const [previous] = kind === 'cv'
+    ? await db.query("SELECT id,stored_name FROM uploaded_files WHERE kind='cv'")
+    : kind === 'certificate'
+      ? await db.execute("SELECT id,stored_name FROM uploaded_files WHERE kind='certificate' AND entity_id=?",[entityId])
+      : [[]];
   await mkdir(uploadDirectory, { recursive: true });
   const storedName = `${kind}-${randomUUID()}${extensions[req.file.mimetype]}`;
   const storedPath = path.join(uploadDirectory, storedName);
@@ -52,6 +57,8 @@ const handleUpload = asyncHandler(async (req, res) => {
   const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
+    if (kind === 'cv') await connection.execute("DELETE FROM uploaded_files WHERE kind='cv'");
+    if (kind === 'certificate') await connection.execute("DELETE FROM uploaded_files WHERE kind='certificate' AND entity_id=?",[entityId]);
     const [result] = await connection.execute('INSERT INTO uploaded_files(kind,entity_id,original_name,stored_name,mime_type,size_bytes,url) VALUES(?,?,?,?,?,?,?)', [kind, entityId, req.file.originalname, storedName, req.file.mimetype, req.file.size, url]);
     if (kind === 'project_image') {
       await connection.execute('INSERT INTO project_images(project_id,url,alt_text) VALUES(?,?,?)', [entityId, url, req.body.alt_text || req.file.originalname]);
@@ -59,6 +66,7 @@ const handleUpload = asyncHandler(async (req, res) => {
     }
     if (kind === 'certificate') await connection.execute('UPDATE achievements SET credential_url=? WHERE id=?', [url, entityId]);
     await connection.commit();
+    await Promise.all(previous.map((file)=>rm(path.join(uploadDirectory,file.stored_name),{force:true}).catch(()=>{})));
     res.status(201).json({ success: true, data: { id: result.insertId, kind, url, original_name: req.file.originalname } });
   } catch (error) {
     await connection.rollback();

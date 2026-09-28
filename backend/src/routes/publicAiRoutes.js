@@ -25,7 +25,8 @@ router.post('/chat', verifyTurnstile, validate(messageSchema), asyncHandler(asyn
   const response = await fetch('https://generativelanguage.googleapis.com/v1beta/interactions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
-    body: JSON.stringify({ model: env.GEMINI_MODEL, input: `You are Fahiz AI, a helpful public assistant on Fahiz Ahmed's professional website. Do not claim access to private data. Answer clearly and professionally.\n\n${transcript}` }),
+    signal: AbortSignal.timeout(30000),
+    body: JSON.stringify({ model: env.GEMINI_MODEL, store: false, generation_config: { max_output_tokens: env.PUBLIC_AI_MAX_OUTPUT_TOKENS, thinking_level: 'low' }, input: `You are Fahiz AI, a helpful public assistant on Fahiz Ahmed's professional website. Do not claim access to private data. Answer clearly and professionally.\n\n${transcript}` }),
   });
   const body = await response.json();
   if (!response.ok) throw Object.assign(new Error(body.error?.message || 'The AI assistant is unavailable.'), { status: 502 });

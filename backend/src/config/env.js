@@ -21,5 +21,6 @@ const schema = z.object({
   ADMIN_NOTIFICATION_EMAIL: z.string().default(''),
   TURNSTILE_SECRET_KEY: z.string().default(''),
   PUBLIC_AI_DAILY_LIMIT: z.coerce.number().int().positive().max(100).default(5),
+  PUBLIC_AI_MAX_OUTPUT_TOKENS: z.coerce.number().int().min(100).max(4000).default(800),
 });
 export const env = schema.parse(process.env);

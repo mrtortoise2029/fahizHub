@@ -16,6 +16,7 @@ export default [
     languageOptions: { ecmaVersion: 2022, globals: globals.browser, parserOptions: { ecmaVersion: 'latest', ecmaFeatures: { jsx: true }, sourceType: 'module' } },
   },
   { files: ['**/*.test.{js,jsx}'], languageOptions: { globals: globals.jest } },
+  { files: ['e2e/**/*.js'], languageOptions: { globals: globals.node } },
   { files: ['src/context/**/*.jsx'], rules: { 'react-refresh/only-export-components': 'off' } },
   { files: ['scripts/**/*.js', 'playwright.config.js'], languageOptions: { globals: globals.node } },
   { files: ['src/components/TurnstileWidget.jsx'], rules: { 'react-refresh/only-export-components': 'off' } },

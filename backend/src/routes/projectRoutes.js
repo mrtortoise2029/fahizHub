@@ -4,6 +4,7 @@ import { db } from '../config/database.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { removeEntityUploads } from '../services/uploadCleanup.js';
 
 const router = Router();
 const projectSchema = z.object({
@@ -58,6 +59,7 @@ router.put('/:id', requireAuth, validate(projectSchema), asyncHandler(async (req
 router.delete('/:id', requireAuth, asyncHandler(async (req, res) => {
   const [result] = await db.execute('DELETE FROM projects WHERE id=?', [req.params.id]);
   if (!result.affectedRows) return res.status(404).json({ success: false, message: 'Project not found.' });
+  await removeEntityUploads('project_image',req.params.id);
   res.status(204).end();
 }));
 

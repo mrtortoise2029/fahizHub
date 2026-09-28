@@ -1,4 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: new URL('../.env', import.meta.url), quiet: true });
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173';
 
