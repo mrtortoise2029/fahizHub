@@ -25,5 +25,10 @@ Implemented foundation endpoints:
 - `GET /meetings` and `PATCH /meetings/:id` — authenticated meeting management
 - `GET /tasks`, `POST /tasks`, `PUT /tasks/:id`, `DELETE /tasks/:id` — authenticated task workflow
 - `GET /tasks/categories` — configured task categories
+- `/student/courses` and `/student/assignments` — authenticated student workflows
+- `/learning` — authenticated learning-goal CRUD
+- `/ai` and `/ai/:id/messages` — authenticated conversation history and Gemini chat
+- `GET /dashboard` — real workspace summaries
+- `GET/PUT /settings` — authenticated public-profile settings
 
 API responses use `{ success, data }` for success and `{ success: false, message, errors? }` for errors. Private CRUD endpoints will require authentication and feature-specific validation.

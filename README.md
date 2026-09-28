@@ -20,6 +20,8 @@ Phase 1 foundation and the public content portion of Phase 2 are implemented:
 - Private task creation, editing, completion, priorities, categories, due dates, and deletion
 - Student Center for courses and assignments, backed by MySQL
 - Learning goals with admin-controlled status, target date, and progress
+- Fahiz AI conversation history, server-side Gemini integration, and opt-in personal context
+- Live dashboard summaries and editable public profile settings
 - Frontend and backend tests, linting, and production build scripts
 
 The feature-rich CRUD modules listed in the product brief remain incremental work. Placeholder admin pages are deliberately empty rather than showing fake analytics or content.
