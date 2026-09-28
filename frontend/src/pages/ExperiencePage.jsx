@@ -1,0 +1,5 @@
+import { BriefcaseBusiness } from 'lucide-react';
+import { ErrorState } from '../components/ContentState';
+import { useApiResource } from '../hooks/useApiResource';
+export default function ExperiencePage(){const {data,loading,error}=useApiResource('/content/experience',[]);return <div className="container-page py-12 sm:py-16"><p className="eyebrow">Leadership and experience</p><h1 className="mt-2 text-3xl font-bold sm:text-4xl">Experience</h1><div className="mt-8 max-w-3xl">{loading?<p>Loading experience…</p>:error?<ErrorState message={error}/>:data.length?<div className="grid gap-5">{data.map((item)=><article className="surface p-5 sm:p-7" key={item.id}><BriefcaseBusiness className="text-brand-600"/><h2 className="mt-4 text-xl font-bold">{item.title}</h2><p className="mt-1 font-medium text-slate-600 dark:text-slate-300">{item.organization}</p>{item.previous_title&&<p className="mt-2 text-sm text-slate-500">Previously: {item.previous_title}</p>}<p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">{item.description}</p></article>)}</div>:<div className="surface p-8 text-center text-slate-500">No experience published yet.</div>}</div></div>}
+

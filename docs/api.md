@@ -10,6 +10,9 @@ Implemented foundation endpoints:
 - `GET /auth/me` — return the authenticated admin profile
 - `GET /projects` — list published projects and related skills
 - `GET /projects/:slug` — retrieve one published project
+- `GET /content/profile` — retrieve public profile and hero content
+- `GET /content/skills` — list published skills grouped by category
+- `GET /content/education` — list published education records
+- `GET /content/experience` — list published experience and leadership records
 
 API responses use `{ success, data }` for success and `{ success: false, message, errors? }` for errors. Private CRUD endpoints will require authentication and feature-specific validation.
-
