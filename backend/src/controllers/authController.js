@@ -10,10 +10,11 @@ import {
 const cookieOptions = {
   httpOnly: true,
   secure: env.NODE_ENV === "production",
-  sameSite: "lax",
+  sameSite: env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 2 * 60 * 60 * 1000,
   path: "/",
 };
+
 export async function login(req, res) {
   const { email, password, otp } = req.validated;
   const [rows] = await db.execute(
