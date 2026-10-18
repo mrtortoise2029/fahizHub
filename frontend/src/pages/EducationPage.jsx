@@ -1,5 +1,49 @@
-import { GraduationCap } from 'lucide-react';
-import { ErrorState } from '../components/ContentState';
-import { useApiResource } from '../hooks/useApiResource';
-export default function EducationPage(){const {data,loading,error}=useApiResource('/content/education',[]);return <div className="container-page py-12 sm:py-16"><p className="eyebrow">Academic journey</p><h1 className="mt-2 text-3xl font-bold sm:text-4xl">Education</h1><div className="mt-8 max-w-3xl">{loading?<p>Loading education…</p>:error?<ErrorState message={error}/>:data.length?<div className="grid gap-5">{data.map((item)=><article className="surface p-5 sm:p-7" key={item.id}><GraduationCap className="text-brand-600"/><h2 className="mt-4 text-xl font-bold">{item.degree}</h2><p className="mt-1 font-medium text-slate-600 dark:text-slate-300">{item.institution}</p><div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-500"><span>{item.status}</span>{item.credits_completed&&<span>· {Number(item.credits_completed)} credits completed</span>}{item.cgpa&&<span>· CGPA {Number(item.cgpa).toFixed(2)}</span>}</div>{item.description&&<p className="mt-4 leading-7">{item.description}</p>}</article>)}</div>:<div className="surface p-8 text-center text-slate-500">No education published yet.</div>}</div></div>}
-
+import { GraduationCap } from "lucide-react";
+import { ErrorState } from "../components/ContentState";
+import { useApiResource } from "../hooks/useApiResource";
+export default function EducationPage() {
+  const { data, loading, error } = useApiResource("/content/education", []);
+  return (
+    <div className="container-page py-12 sm:py-16">
+      <p className="eyebrow">Academic journey</p>
+      <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Education</h1>
+      <div className="mt-8 max-w-3xl">
+        {loading ? (
+          <p>Loading education…</p>
+        ) : error ? (
+          <ErrorState message={error} />
+        ) : data.length ? (
+          <div className="grid gap-5">
+            {data.map((item) => (
+              <article className="surface p-5 sm:p-7" key={item.id}>
+                <GraduationCap className="text-brand-600" />
+                <h2 className="mt-4 text-xl font-bold">{item.degree}</h2>
+                <p className="mt-1 font-medium text-slate-600 dark:text-slate-300">
+                  {item.institution}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2 text-sm text-slate-500">
+                  <span>{item.status}</span>
+                  {item.credits_completed && (
+                    <span>
+                      · {Number(item.credits_completed)} credits completed
+                    </span>
+                  )}
+                  {item.cgpa && (
+                    <span>· CGPA {Number(item.cgpa).toFixed(2)}</span>
+                  )}
+                </div>
+                {item.description && (
+                  <p className="mt-4 leading-7">{item.description}</p>
+                )}
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="surface p-8 text-center text-slate-500">
+            No education published yet.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

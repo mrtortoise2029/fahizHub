@@ -1,1 +1,161 @@
-import{Trash2}from'lucide-react';import{useCallback,useEffect,useState}from'react';import{api}from'../../services/api';import MeetingBlocks from '../../components/MeetingBlocks';const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];export default function MeetingsPage(){const[items,setItems]=useState([]);const[availability,setAvailability]=useState([]);const[error,setError]=useState('');const load=useCallback(async()=>{try{const[m,a]=await Promise.all([api.get('/meetings'),api.get('/meetings/availability')]);setItems(m.data.data);setAvailability(a.data.data)}catch(e){setError(e.response?.data?.message||'Unable to load meetings.')}},[]);useEffect(()=>{load()},[load]);async function update(item,status){await api.patch(`/meetings/${item.id}`,{status,admin_notes:item.admin_notes||''});load()}async function addAvailability(e){e.preventDefault();await api.post('/meetings/availability',Object.fromEntries(new FormData(e.currentTarget)));e.currentTarget.reset();load()}async function removeAvailability(id){await api.delete(`/meetings/availability/${id}`);load()}return <><h1 className="text-2xl font-bold">Meetings</h1><p className="mt-1 text-sm text-slate-500">Configure availability and manage booking requests.</p>{error&&<p className="mt-4 text-red-600">{error}</p>}<section className="surface mt-6 p-5"><h2 className="font-bold">Weekly availability</h2><form className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5" onSubmit={addAvailability}><select name="day_of_week" className="min-h-11 rounded-lg border bg-transparent px-3">{days.map((d,i)=><option value={i} key={d}>{d}</option>)}</select><input name="start_time" type="time" required className="min-h-11 rounded-lg border bg-transparent px-3"/><input name="end_time" type="time" required className="min-h-11 rounded-lg border bg-transparent px-3"/><input name="timezone" defaultValue="Asia/Dhaka" required className="min-h-11 rounded-lg border bg-transparent px-3"/><button className="button-primary">Add hours</button></form><div className="mt-4 flex flex-wrap gap-2">{availability.map(a=><span className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm dark:bg-ink-800" key={a.id}>{days[a.day_of_week]} {String(a.start_time).slice(0,5)}–{String(a.end_time).slice(0,5)}<button className="text-red-600" onClick={()=>removeAvailability(a.id)}><Trash2 size={15}/></button></span>)}</div></section><MeetingBlocks/><div className="mt-6 grid gap-4">{items.length?items.map(item=><article className="surface p-5" key={item.id}><div className="flex flex-col gap-4 sm:flex-row sm:justify-between"><div><h2 className="font-bold">{item.type} <span className="ml-2 text-xs font-normal text-slate-500">{item.status}</span></h2><p className="mt-2 text-sm">{item.name} · <a href={`mailto:${item.email}`} className="text-brand-600">{item.email}</a></p><p className="mt-1 text-sm">{new Date(item.start_time_utc).toLocaleString()}</p></div><div className="flex flex-wrap gap-2">{['confirmed','completed','rejected','cancelled'].map(status=><button className="button-secondary px-3" onClick={()=>update(item,status)} key={status}>{status}</button>)}</div></div></article>):<div className="surface p-10 text-center text-sm text-slate-500">No meeting requests yet.</div>}</div></>}
+import { Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { api } from "../../services/api";
+import MeetingBlocks from "../../components/MeetingBlocks";
+const days = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+export default function MeetingsPage() {
+  const [items, setItems] = useState([]);
+  const [availability, setAvailability] = useState([]);
+  const [error, setError] = useState("");
+  const load = useCallback(async () => {
+    try {
+      const [m, a] = await Promise.all([
+        api.get("/meetings"),
+        api.get("/meetings/availability"),
+      ]);
+      setItems(m.data.data);
+      setAvailability(a.data.data);
+    } catch (e) {
+      setError(e.response?.data?.message || "Unable to load meetings.");
+    }
+  }, []);
+  useEffect(() => {
+    load();
+  }, [load]);
+  async function update(item, status) {
+    await api.patch(`/meetings/${item.id}`, {
+      status,
+      admin_notes: item.admin_notes || "",
+    });
+    load();
+  }
+  async function addAvailability(e) {
+    e.preventDefault();
+    await api.post(
+      "/meetings/availability",
+      Object.fromEntries(new FormData(e.currentTarget)),
+    );
+    e.currentTarget.reset();
+    load();
+  }
+  async function removeAvailability(id) {
+    await api.delete(`/meetings/availability/${id}`);
+    load();
+  }
+  return (
+    <>
+      <h1 className="text-2xl font-bold">Meetings</h1>
+      <p className="mt-1 text-sm text-slate-500">
+        Configure availability and manage booking requests.
+      </p>
+      {error && <p className="mt-4 text-red-600">{error}</p>}
+      <section className="surface mt-6 p-5">
+        <h2 className="font-bold">Weekly availability</h2>
+        <form
+          className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
+          onSubmit={addAvailability}
+        >
+          <select
+            name="day_of_week"
+            className="min-h-11 rounded-lg border bg-transparent px-3"
+          >
+            {days.map((d, i) => (
+              <option value={i} key={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <input
+            name="start_time"
+            type="time"
+            required
+            className="min-h-11 rounded-lg border bg-transparent px-3"
+          />
+          <input
+            name="end_time"
+            type="time"
+            required
+            className="min-h-11 rounded-lg border bg-transparent px-3"
+          />
+          <input
+            name="timezone"
+            defaultValue="Asia/Dhaka"
+            required
+            className="min-h-11 rounded-lg border bg-transparent px-3"
+          />
+          <button className="button-primary">Add hours</button>
+        </form>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {availability.map((a) => (
+            <span
+              className="inline-flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-2 text-sm dark:bg-ink-800"
+              key={a.id}
+            >
+              {days[a.day_of_week]} {String(a.start_time).slice(0, 5)}–
+              {String(a.end_time).slice(0, 5)}
+              <button
+                className="text-red-600"
+                onClick={() => removeAvailability(a.id)}
+              >
+                <Trash2 size={15} />
+              </button>
+            </span>
+          ))}
+        </div>
+      </section>
+      <MeetingBlocks />
+      <div className="mt-6 grid gap-4">
+        {items.length ? (
+          items.map((item) => (
+            <article className="surface p-5" key={item.id}>
+              <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
+                <div>
+                  <h2 className="font-bold">
+                    {item.type}{" "}
+                    <span className="ml-2 text-xs font-normal text-slate-500">
+                      {item.status}
+                    </span>
+                  </h2>
+                  <p className="mt-2 text-sm">
+                    {item.name} ·{" "}
+                    <a href={`mailto:${item.email}`} className="text-brand-600">
+                      {item.email}
+                    </a>
+                  </p>
+                  <p className="mt-1 text-sm">
+                    {new Date(item.start_time_utc).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {["confirmed", "completed", "rejected", "cancelled"].map(
+                    (status) => (
+                      <button
+                        className="button-secondary px-3"
+                        onClick={() => update(item, status)}
+                        key={status}
+                      >
+                        {status}
+                      </button>
+                    ),
+                  )}
+                </div>
+              </div>
+            </article>
+          ))
+        ) : (
+          <div className="surface p-10 text-center text-sm text-slate-500">
+            No meeting requests yet.
+          </div>
+        )}
+      </div>
+    </>
+  );
+}

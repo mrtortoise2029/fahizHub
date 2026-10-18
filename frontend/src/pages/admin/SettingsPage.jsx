@@ -1,5 +1,132 @@
-import { useEffect, useState } from 'react';
-import { api } from '../../services/api';
-import FileUpload from '../../components/FileUpload';
-const fields=[['name','Name'],['headline','Professional positioning'],['hero_title','Homepage headline'],['hero_subtitle','Homepage subheadline'],['short_bio','Short bio'],['long_bio','Long bio'],['current_focus','Current focus'],['timezone','Timezone'],['public_email','Verified public email'],['github_url','GitHub URL'],['linkedin_url','LinkedIn URL']];
-export default function SettingsPage(){const[data,setData]=useState(null);const[calendar,setCalendar]=useState(null);const[status,setStatus]=useState('');useEffect(()=>{api.get('/settings').then(r=>setData(r.data.data));api.get('/settings/google-calendar').then(r=>setCalendar(r.data.data))},[]);async function save(e){e.preventDefault();setStatus('Saving…');try{await api.put('/settings',Object.fromEntries(new FormData(e.currentTarget)));setStatus('Saved successfully.')}catch(err){setStatus(err.response?.data?.message||'Unable to save settings.')}}if(!data)return<p>Loading settings…</p>;return <><h1 className="text-2xl font-bold">Settings</h1><p className="mt-1 text-sm text-slate-500">Edit public profile, integrations, verified links, and regional preferences.</p><div className="mt-6 grid max-w-4xl gap-5 md:grid-cols-2"><section className="surface p-5"><h2 className="font-bold">Resume file</h2><p className="my-3 text-sm text-slate-500">Upload a validated PDF CV for public download.</p><FileUpload kind="cv" accept="application/pdf" label="Upload CV"/></section><section className="surface p-5"><h2 className="font-bold">Google Calendar</h2><p className="my-3 text-sm text-slate-500">Confirmed meetings can be added to your primary calendar and invite the visitor.</p>{calendar?.connected?<><p className="text-sm font-semibold text-green-700">Connected</p><button className="button-secondary mt-3" onClick={async()=>{await api.delete('/settings/google-calendar');setCalendar({...calendar,connected:false})}}>Disconnect</button></>:calendar?.configured?<a className="button-primary" href={calendar.connect_url}>Connect Google Calendar</a>:<p className="text-sm text-amber-700">Add GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REDIRECT_URI to enable this integration.</p>}</section></div><form className="surface mt-6 grid max-w-4xl gap-5 p-5 sm:p-7" onSubmit={save}>{fields.map(([name,label])=><label className="grid gap-2 text-sm font-semibold" key={name}>{label}{['hero_subtitle','short_bio','long_bio','current_focus'].includes(name)?<textarea name={name} defaultValue={data[name]||''} rows={name==='long_bio'?6:3} className="rounded-lg border bg-transparent p-3"/>:<input name={name} type={name==='public_email'?'email':name.endsWith('_url')?'url':'text'} defaultValue={data[name]||''} required={!['public_email','github_url','linkedin_url'].includes(name)} className="min-h-11 rounded-lg border bg-transparent px-3"/>}</label>)}<div className="flex items-center gap-4"><button className="button-primary">Save settings</button><span className="text-sm text-slate-500" role="status">{status}</span></div></form></>}
+import { useEffect, useState } from "react";
+import { api } from "../../services/api";
+import FileUpload from "../../components/FileUpload";
+const fields = [
+  ["name", "Name"],
+  ["headline", "Professional positioning"],
+  ["hero_title", "Homepage headline"],
+  ["hero_subtitle", "Homepage subheadline"],
+  ["short_bio", "Short bio"],
+  ["long_bio", "Long bio"],
+  ["current_focus", "Current focus"],
+  ["timezone", "Timezone"],
+  ["public_email", "Verified public email"],
+  ["github_url", "GitHub URL"],
+  ["linkedin_url", "LinkedIn URL"],
+];
+export default function SettingsPage() {
+  const [data, setData] = useState(null);
+  const [calendar, setCalendar] = useState(null);
+  const [status, setStatus] = useState("");
+  useEffect(() => {
+    api.get("/settings").then((r) => setData(r.data.data));
+    api.get("/settings/google-calendar").then((r) => setCalendar(r.data.data));
+  }, []);
+  async function save(e) {
+    e.preventDefault();
+    setStatus("Saving…");
+    try {
+      await api.put(
+        "/settings",
+        Object.fromEntries(new FormData(e.currentTarget)),
+      );
+      setStatus("Saved successfully.");
+    } catch (err) {
+      setStatus(err.response?.data?.message || "Unable to save settings.");
+    }
+  }
+  if (!data) return <p>Loading settings…</p>;
+  return (
+    <>
+      <h1 className="text-2xl font-bold">Settings</h1>
+      <p className="mt-1 text-sm text-slate-500">
+        Edit public profile, integrations, verified links, and regional
+        preferences.
+      </p>
+      <div className="mt-6 grid max-w-4xl gap-5 md:grid-cols-2">
+        <section className="surface p-5">
+          <h2 className="font-bold">Resume file</h2>
+          <p className="my-3 text-sm text-slate-500">
+            Upload a validated PDF CV for public download.
+          </p>
+          <FileUpload kind="cv" accept="application/pdf" label="Upload CV" />
+        </section>
+        <section className="surface p-5">
+          <h2 className="font-bold">Google Calendar</h2>
+          <p className="my-3 text-sm text-slate-500">
+            Confirmed meetings can be added to your primary calendar and invite
+            the visitor.
+          </p>
+          {calendar?.connected ? (
+            <>
+              <p className="text-sm font-semibold text-green-700">Connected</p>
+              <button
+                className="button-secondary mt-3"
+                onClick={async () => {
+                  await api.delete("/settings/google-calendar");
+                  setCalendar({ ...calendar, connected: false });
+                }}
+              >
+                Disconnect
+              </button>
+            </>
+          ) : calendar?.configured ? (
+            <a className="button-primary" href={calendar.connect_url}>
+              Connect Google Calendar
+            </a>
+          ) : (
+            <p className="text-sm text-amber-700">
+              Add GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REDIRECT_URI
+              to enable this integration.
+            </p>
+          )}
+        </section>
+      </div>
+      <form
+        className="surface mt-6 grid max-w-4xl gap-5 p-5 sm:p-7"
+        onSubmit={save}
+      >
+        {fields.map(([name, label]) => (
+          <label className="grid gap-2 text-sm font-semibold" key={name}>
+            {label}
+            {[
+              "hero_subtitle",
+              "short_bio",
+              "long_bio",
+              "current_focus",
+            ].includes(name) ? (
+              <textarea
+                name={name}
+                defaultValue={data[name] || ""}
+                rows={name === "long_bio" ? 6 : 3}
+                className="rounded-lg border bg-transparent p-3"
+              />
+            ) : (
+              <input
+                name={name}
+                type={
+                  name === "public_email"
+                    ? "email"
+                    : name.endsWith("_url")
+                      ? "url"
+                      : "text"
+                }
+                defaultValue={data[name] || ""}
+                required={
+                  !["public_email", "github_url", "linkedin_url"].includes(name)
+                }
+                className="min-h-11 rounded-lg border bg-transparent px-3"
+              />
+            )}
+          </label>
+        ))}
+        <div className="flex items-center gap-4">
+          <button className="button-primary">Save settings</button>
+          <span className="text-sm text-slate-500" role="status">
+            {status}
+          </span>
+        </div>
+      </form>
+    </>
+  );
+}

@@ -1,8 +1,52 @@
-import { ArrowUpRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-export default function ProjectCard({ project }) { const technologies=(project.technologies||[]).filter(Boolean); return <article className="surface group flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:border-slate-300 dark:hover:border-slate-700">
-  <div className="grid aspect-[16/8] place-items-center overflow-hidden bg-slate-100 bg-[linear-gradient(135deg,transparent_40%,rgba(37,99,235,.1))] dark:bg-ink-800">{project.thumbnail_url?<img className="size-full object-cover" src={`${import.meta.env.VITE_SERVER_URL||(import.meta.env.DEV?'http://localhost:3000':'')}${project.thumbnail_url}`} alt=""/>:<span className="text-3xl font-extrabold tracking-tight text-slate-300 dark:text-slate-700">{project.title.slice(0, 2).toUpperCase()}</span>}</div>
-  <div className="flex flex-1 flex-col p-5"><p className="text-xs font-semibold uppercase tracking-wider text-brand-600">{project.category}</p><h3 className="mt-2 text-xl font-bold text-slate-950 dark:text-white">{project.title}</h3><p className="mt-1 text-sm font-medium text-slate-500">{project.subtitle}</p><p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{project.description}</p>
-  <div className="mt-5 flex flex-wrap gap-2">{technologies.slice(0, 4).map((tech) => <span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-medium dark:bg-ink-800" key={tech}>{tech}</span>)}</div>
-  <Link className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600" to={`/projects/${project.slug}`}>View details <ArrowUpRight size={16}/></Link></div>
-</article>; }
+import { ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
+export default function ProjectCard({ project }) {
+  const technologies = (project.technologies || []).filter(Boolean);
+  return (
+    <article className="surface group flex h-full flex-col overflow-hidden transition hover:-translate-y-1 hover:border-slate-300 dark:hover:border-slate-700">
+      <div className="grid aspect-[16/8] place-items-center overflow-hidden bg-slate-100 bg-[linear-gradient(135deg,transparent_40%,rgba(37,99,235,.1))] dark:bg-ink-800">
+        {project.thumbnail_url ? (
+          <img
+            className="size-full object-cover"
+            src={`${import.meta.env.VITE_SERVER_URL || (import.meta.env.DEV ? "http://localhost:3000" : "")}${project.thumbnail_url}`}
+            alt=""
+          />
+        ) : (
+          <span className="text-3xl font-extrabold tracking-tight text-slate-300 dark:text-slate-700">
+            {project.title.slice(0, 2).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col p-5">
+        <p className="text-xs font-semibold uppercase tracking-wider text-brand-600">
+          {project.category}
+        </p>
+        <h3 className="mt-2 text-xl font-bold text-slate-950 dark:text-white">
+          {project.title}
+        </h3>
+        <p className="mt-1 text-sm font-medium text-slate-500">
+          {project.subtitle}
+        </p>
+        <p className="mt-4 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
+          {project.description}
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {technologies.slice(0, 4).map((tech) => (
+            <span
+              className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-medium dark:bg-ink-800"
+              key={tech}
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+        <Link
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600"
+          to={`/projects/${project.slug}`}
+        >
+          View details <ArrowUpRight size={16} />
+        </Link>
+      </div>
+    </article>
+  );
+}

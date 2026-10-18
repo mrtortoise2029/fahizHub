@@ -1,1 +1,59 @@
-import{Github,Linkedin,Mail}from'lucide-react';import{Link}from'react-router-dom';import{useApiResource}from'../hooks/useApiResource';export default function Footer(){const{data}=useApiResource('/content/profile');return <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-ink-900"><div className="container-page grid gap-8 py-10 sm:grid-cols-2 sm:items-end"><div><p className="font-bold text-slate-950 dark:text-white">{data?.name||'Fahiz Ahmed'}</p><p className="mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">Building, learning, and turning ideas into practical software.</p></div><div className="flex flex-wrap items-center gap-4 text-sm sm:justify-end">{data?.github_url&&<a className="inline-flex items-center gap-1.5 hover:text-brand-600" href={data.github_url} target="_blank" rel="noreferrer"><Github size={17}/>GitHub</a>}{data?.linkedin_url&&<a className="inline-flex items-center gap-1.5 hover:text-brand-600" href={data.linkedin_url} target="_blank" rel="noreferrer"><Linkedin size={17}/>LinkedIn</a>}{data?.public_email&&<a className="inline-flex items-center gap-1.5 hover:text-brand-600" href={`mailto:${data.public_email}`}><Mail size={17}/>Email</a>}<Link to="/projects">Projects</Link><Link to="/resume">Resume</Link></div><p className="text-xs text-slate-500 sm:col-span-2">© {new Date().getFullYear()} {data?.name||'Fahiz Ahmed'}. All rights reserved.</p></div></footer>}
+import { Github, Linkedin, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useApiResource } from "../hooks/useApiResource";
+export default function Footer() {
+  const { data } = useApiResource("/content/profile");
+  return (
+    <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-ink-900">
+      <div className="container-page grid gap-8 py-10 sm:grid-cols-2 sm:items-end">
+        <div>
+          <p className="font-bold text-slate-950 dark:text-white">
+            {data?.name || "Fahiz Ahmed"}
+          </p>
+          <p className="mt-2 max-w-md text-sm text-slate-600 dark:text-slate-400">
+            Building, learning, and turning ideas into practical software.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-4 text-sm sm:justify-end">
+          {data?.github_url && (
+            <a
+              className="inline-flex items-center gap-1.5 hover:text-brand-600"
+              href={data.github_url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Github size={17} />
+              GitHub
+            </a>
+          )}
+          {data?.linkedin_url && (
+            <a
+              className="inline-flex items-center gap-1.5 hover:text-brand-600"
+              href={data.linkedin_url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Linkedin size={17} />
+              LinkedIn
+            </a>
+          )}
+          {data?.public_email && (
+            <a
+              className="inline-flex items-center gap-1.5 hover:text-brand-600"
+              href={`mailto:${data.public_email}`}
+            >
+              <Mail size={17} />
+              Email
+            </a>
+          )}
+          <Link to="/projects">Projects</Link>
+          <Link to="/resume">Resume</Link>
+        </div>
+        <p className="text-xs text-slate-500 sm:col-span-2">
+          © {new Date().getFullYear()} {data?.name || "Fahiz Ahmed"}. All rights
+          reserved.
+        </p>
+      </div>
+    </footer>
+  );
+}

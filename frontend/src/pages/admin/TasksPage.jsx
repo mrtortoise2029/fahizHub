@@ -1,5 +1,213 @@
-import { Check,Plus,Trash2 } from 'lucide-react';import { useCallback,useEffect,useState } from 'react';import { api } from '../../services/api';
-const blank={title:'',notes:'',priority:'medium',due_at:'',status:'todo',category_id:'',recurrence_rule:''};
-export default function TasksPage(){const [tasks,setTasks]=useState([]);const [categories,setCategories]=useState([]);const [form,setForm]=useState(null);const [error,setError]=useState('');const load=useCallback(async()=>{try{const [t,c]=await Promise.all([api.get('/tasks'),api.get('/tasks/categories')]);setTasks(t.data.data);setCategories(c.data.data)}catch(e){setError(e.response?.data?.message||'Unable to load tasks.')}},[]);useEffect(()=>{load()},[load]);async function save(e){e.preventDefault();const raw=Object.fromEntries(new FormData(e.currentTarget));const payload={...raw,due_at:raw.due_at?new Date(raw.due_at).toISOString():'',category_id:raw.category_id?Number(raw.category_id):null};if(form.id)await api.put(`/tasks/${form.id}`,payload);else await api.post('/tasks',payload);setForm(null);load()}async function complete(task){await api.put(`/tasks/${task.id}`,{...task,due_at:task.due_at?new Date(task.due_at).toISOString():'',category_id:task.category_id||null,recurrence_rule:task.recurrence_rule||'',status:task.status==='completed'?'todo':'completed'});load()}async function remove(id){if(confirm('Delete this task?')){await api.delete(`/tasks/${id}`);load()}}return <><div className="flex items-center justify-between"><div><h1 className="text-2xl font-bold">Tasks</h1><p className="mt-1 text-sm text-slate-500">Plan university, project, career, and personal work.</p></div><button className="button-primary" onClick={()=>setForm(blank)}><Plus size={18}/>Add task</button></div>{error&&<p className="mt-4 text-red-600">{error}</p>}{form&&<form className="surface mt-6 grid gap-4 p-5 md:grid-cols-2" onSubmit={save}><Field name="title" label="Task" value={form.title} required/><label className="grid gap-2 text-sm font-semibold">Category<select name="category_id" defaultValue={form.category_id||''} className="min-h-11 rounded-lg border bg-transparent px-3"><option value="">No category</option>{categories.map(c=><option value={c.id} key={c.id}>{c.name}</option>)}</select></label><label className="grid gap-2 text-sm font-semibold">Priority<select name="priority" defaultValue={form.priority} className="min-h-11 rounded-lg border bg-transparent px-3">{['low','medium','high','urgent'].map(p=><option key={p}>{p}</option>)}</select></label><Field name="due_at" label="Due" type="datetime-local" value={form.due_at?new Date(form.due_at).toISOString().slice(0,16):''}/><label className="grid gap-2 text-sm font-semibold">Repeat<select name="recurrence_rule" defaultValue={form.recurrence_rule||''} className="min-h-11 rounded-lg border bg-transparent px-3"><option value="">Does not repeat</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></label><label className="grid gap-2 text-sm font-semibold md:col-span-2">Notes<textarea name="notes" defaultValue={form.notes||''} rows="3" className="rounded-lg border bg-transparent p-3"/></label><input type="hidden" name="status" value={form.status}/><div className="flex gap-3"><button className="button-primary">Save</button><button className="button-secondary" type="button" onClick={()=>setForm(null)}>Cancel</button></div></form>}<section className="surface mt-6 divide-y divide-slate-200 overflow-hidden dark:divide-slate-800">{tasks.length?tasks.map(task=><article className="flex items-center gap-3 p-4" key={task.id}><button onClick={()=>complete(task)} className={`grid size-9 shrink-0 place-items-center rounded-full border ${task.status==='completed'?'bg-green-600 text-white':''}`} aria-label="Toggle complete">{task.status==='completed'&&<Check size={17}/>}</button><button className="min-w-0 flex-1 text-left" onClick={()=>setForm(task)}><p className={`font-medium ${task.status==='completed'?'line-through text-slate-400':''}`}>{task.title}</p><p className="mt-1 text-xs text-slate-500">{task.category||'No category'} · {task.priority}{task.due_at&&` · ${new Date(task.due_at).toLocaleString()}`}</p></button><button className="grid size-10 place-items-center text-red-600" onClick={()=>remove(task.id)} aria-label="Delete task"><Trash2 size={17}/></button></article>):<p className="p-10 text-center text-sm text-slate-500">No tasks yet.</p>}</section></>}
-function Field({name,label,value='',type='text',...props}){return <label className="grid gap-2 text-sm font-semibold">{label}<input name={name} type={type} defaultValue={value||''} className="min-h-11 rounded-lg border bg-transparent px-3" {...props}/></label>}
+import { Check, Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { api } from "../../services/api";
 
+const blank = {
+  title: "",
+  notes: "",
+  priority: "medium",
+  due_at: "",
+  status: "todo",
+  category_id: "",
+  recurrence_rule: "",
+};
+export default function TasksPage() {
+  const [tasks, setTasks] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [form, setForm] = useState(null);
+  const [error, setError] = useState("");
+  const load = useCallback(async () => {
+    try {
+      const [t, c] = await Promise.all([
+        api.get("/tasks"),
+        api.get("/tasks/categories"),
+      ]);
+      setTasks(t.data.data);
+      setCategories(c.data.data);
+    } catch (e) {
+      setError(e.response?.data?.message || "Unable to load tasks.");
+    }
+  }, []);
+  useEffect(() => {
+    load();
+  }, [load]);
+  async function save(e) {
+    e.preventDefault();
+    const raw = Object.fromEntries(new FormData(e.currentTarget));
+    const payload = {
+      ...raw,
+      due_at: raw.due_at ? new Date(raw.due_at).toISOString() : "",
+      category_id: raw.category_id ? Number(raw.category_id) : null,
+    };
+    if (form.id) await api.put(`/tasks/${form.id}`, payload);
+    else await api.post("/tasks", payload);
+    setForm(null);
+    load();
+  }
+  async function complete(task) {
+    await api.put(`/tasks/${task.id}`, {
+      ...task,
+      due_at: task.due_at ? new Date(task.due_at).toISOString() : "",
+      category_id: task.category_id || null,
+      recurrence_rule: task.recurrence_rule || "",
+      status: task.status === "completed" ? "todo" : "completed",
+    });
+    load();
+  }
+  async function remove(id) {
+    if (confirm("Delete this task?")) {
+      await api.delete(`/tasks/${id}`);
+      load();
+    }
+  }
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Tasks</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Plan university, project, career, and personal work.
+          </p>
+        </div>
+        <button className="button-primary" onClick={() => setForm(blank)}>
+          <Plus size={18} />
+          Add task
+        </button>
+      </div>
+      {error && <p className="mt-4 text-red-600">{error}</p>}
+      {form && (
+        <form
+          className="surface mt-6 grid gap-4 p-5 md:grid-cols-2"
+          onSubmit={save}
+        >
+          <Field name="title" label="Task" value={form.title} required />
+          <label className="grid gap-2 text-sm font-semibold">
+            Category
+            <select
+              name="category_id"
+              defaultValue={form.category_id || ""}
+              className="min-h-11 rounded-lg border bg-transparent px-3"
+            >
+              <option value="">No category</option>
+              {categories.map((c) => (
+                <option value={c.id} key={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="grid gap-2 text-sm font-semibold">
+            Priority
+            <select
+              name="priority"
+              defaultValue={form.priority}
+              className="min-h-11 rounded-lg border bg-transparent px-3"
+            >
+              {["low", "medium", "high", "urgent"].map((p) => (
+                <option key={p}>{p}</option>
+              ))}
+            </select>
+          </label>
+          <Field
+            name="due_at"
+            label="Due"
+            type="datetime-local"
+            value={
+              form.due_at
+                ? new Date(form.due_at).toISOString().slice(0, 16)
+                : ""
+            }
+          />
+          <label className="grid gap-2 text-sm font-semibold">
+            Repeat
+            <select
+              name="recurrence_rule"
+              defaultValue={form.recurrence_rule || ""}
+              className="min-h-11 rounded-lg border bg-transparent px-3"
+            >
+              <option value="">Does not repeat</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
+          </label>
+          <label className="grid gap-2 text-sm font-semibold md:col-span-2">
+            Notes
+            <textarea
+              name="notes"
+              defaultValue={form.notes || ""}
+              rows="3"
+              className="rounded-lg border bg-transparent p-3"
+            />
+          </label>
+          <input type="hidden" name="status" value={form.status} />
+          <div className="flex gap-3">
+            <button className="button-primary">Save</button>
+            <button
+              className="button-secondary"
+              type="button"
+              onClick={() => setForm(null)}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+      <section className="surface mt-6 divide-y divide-slate-200 overflow-hidden dark:divide-slate-800">
+        {tasks.length ? (
+          tasks.map((task) => (
+            <article className="flex items-center gap-3 p-4" key={task.id}>
+              <button
+                onClick={() => complete(task)}
+                className={`grid size-9 shrink-0 place-items-center rounded-full border ${task.status === "completed" ? "bg-green-600 text-white" : ""}`}
+                aria-label="Toggle complete"
+              >
+                {task.status === "completed" && <Check size={17} />}
+              </button>
+              <button
+                className="min-w-0 flex-1 text-left"
+                onClick={() => setForm(task)}
+              >
+                <p
+                  className={`font-medium ${task.status === "completed" ? "line-through text-slate-400" : ""}`}
+                >
+                  {task.title}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {task.category || "No category"} · {task.priority}
+                  {task.due_at &&
+                    ` · ${new Date(task.due_at).toLocaleString()}`}
+                </p>
+              </button>
+              <button
+                className="grid size-10 place-items-center text-red-600"
+                onClick={() => remove(task.id)}
+                aria-label="Delete task"
+              >
+                <Trash2 size={17} />
+              </button>
+            </article>
+          ))
+        ) : (
+          <p className="p-10 text-center text-sm text-slate-500">
+            No tasks yet.
+          </p>
+        )}
+      </section>
+    </>
+  );
+}
+function Field({ name, label, value = "", type = "text", ...props }) {
+  return (
+    <label className="grid gap-2 text-sm font-semibold">
+      {label}
+      <input
+        name={name}
+        type={type}
+        defaultValue={value || ""}
+        className="min-h-11 rounded-lg border bg-transparent px-3"
+        {...props}
+      />
+    </label>
+  );
+}

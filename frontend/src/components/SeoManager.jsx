@@ -1,1 +1,51 @@
-import{useEffect}from'react';import{useLocation}from'react-router-dom';const titles={about:'About',projects:'Projects',skills:'Skills',education:'Education',experience:'Experience',services:'Services',achievements:'Achievements',resume:'Resume',meetings:'Book a Meeting',contact:'Contact',ai:'Fahiz AI'};function meta(property,content){let element=document.head.querySelector(`meta[property="${property}"],meta[name="${property}"]`);if(!element){element=document.createElement('meta');element.setAttribute(property.startsWith('og:')?'property':'name',property);document.head.appendChild(element)}element.setAttribute('content',content)}export default function SeoManager(){const{pathname}=useLocation();useEffect(()=>{const segment=pathname.split('/').filter(Boolean)[0]||'';const page=titles[segment];const title=page?`${page} | Fahiz Ahmed`:'Fahiz Ahmed | Software Developer';const description=segment==='projects'?'Explore software projects by Fahiz Ahmed.':'Fahiz Ahmed — Computer Science student and software developer building practical technology solutions.';document.title=title;meta('description',description);meta('og:title',title);meta('og:description',description);meta('og:type','website');meta('og:url',window.location.href);meta('twitter:card','summary_large_image')},[pathname]);return null}
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+const titles = {
+  about: "About",
+  projects: "Projects",
+  skills: "Skills",
+  education: "Education",
+  experience: "Experience",
+  services: "Services",
+  achievements: "Achievements",
+  resume: "Resume",
+  meetings: "Book a Meeting",
+  contact: "Contact",
+  ai: "Fahiz AI",
+};
+function meta(property, content) {
+  let element = document.head.querySelector(
+    `meta[property="${property}"],meta[name="${property}"]`,
+  );
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute(
+      property.startsWith("og:") ? "property" : "name",
+      property,
+    );
+    document.head.appendChild(element);
+  }
+  element.setAttribute("content", content);
+}
+export default function SeoManager() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const segment = pathname.split("/").filter(Boolean)[0] || "";
+    const page = titles[segment];
+    const title = page
+      ? `${page} | Fahiz Ahmed`
+      : "Fahiz Ahmed | Software Developer";
+    const description =
+      segment === "projects"
+        ? "Explore software projects by Fahiz Ahmed."
+        : "Fahiz Ahmed — Computer Science student and software developer building practical technology solutions.";
+    document.title = title;
+    meta("description", description);
+    meta("og:title", title);
+    meta("og:description", description);
+    meta("og:type", "website");
+    meta("og:url", window.location.href);
+    meta("twitter:card", "summary_large_image");
+  }, [pathname]);
+  return null;
+}

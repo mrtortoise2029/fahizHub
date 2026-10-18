@@ -1,12 +1,213 @@
-import { Bot, RotateCcw, Send, ThumbsDown, ThumbsUp } from 'lucide-react';
-import { useState } from 'react';
-import { api } from '../services/api';
-import TurnstileWidget, { captchaEnabled } from '../components/TurnstileWidget';
+import { Bot, RotateCcw, Send, ThumbsDown, ThumbsUp } from "lucide-react";
+import { useState } from "react";
+import { api } from "../services/api";
+import TurnstileWidget, { captchaEnabled } from "../components/TurnstileWidget";
 
-const suggestions=['What projects has Fahiz built?','What are Fahiz’s strongest technical skills?','How can I contact Fahiz for a project?'];
-export default function PublicAiPage(){
-  const[messages,setMessages]=useState([]);const[message,setMessage]=useState('');const[sending,setSending]=useState(false);const[error,setError]=useState('');const[captcha,setCaptcha]=useState('');const[captchaVersion,setCaptchaVersion]=useState(0);
-  async function send(event,text=message){event?.preventDefault();const question=text.trim();if(!question)return;const history=messages.slice(-6).map(({role,content})=>({role,content}));setMessages((items)=>[...items,{role:'user',content:question}]);setMessage('');setSending(true);setError('');try{const{data}=await api.post('/public-ai/chat',{message:question,history,captcha_token:captcha});setMessages((items)=>[...items,{...data.data,question}])}catch(requestError){setError(requestError.response?.data?.message||'Fahiz AI is temporarily unavailable.')}finally{setSending(false);setCaptcha('');setCaptchaVersion((value)=>value+1)}}
-  async function feedback(item,rating){try{await api.post('/public-ai/feedback',{interaction_id:item.interaction_id,rating,question:item.question,comment:''});setMessages((items)=>items.map((entry)=>entry.interaction_id===item.interaction_id?{...entry,rating}:entry))}catch{setError('Unable to save feedback right now.')}}
-  return <div className="container-page py-8 sm:py-12"><div className="mx-auto max-w-5xl overflow-hidden rounded-xl border border-slate-200 bg-white shadow-soft dark:border-slate-800 dark:bg-ink-900"><header className="flex items-center justify-between border-b border-slate-200 p-4 sm:p-5 dark:border-slate-800"><div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-brand-50 text-brand-600 dark:bg-ink-800"><Bot size={21}/></span><div><h1 className="font-bold text-slate-950 dark:text-white">Fahiz AI</h1><p className="text-xs text-slate-500">Public AI assistant</p></div></div><button className="button-secondary px-3" onClick={()=>{setMessages([]);setError('')}}><RotateCcw size={16}/>New chat</button></header><div className="min-h-[52vh] space-y-4 overflow-y-auto p-4 sm:p-6" aria-live="polite">{!messages.length&&<div className="grid min-h-[38vh] place-items-center text-center"><div><Bot className="mx-auto text-brand-600" size={36}/><h2 className="mt-4 text-xl font-bold">How can I help?</h2><p className="mt-2 max-w-md text-sm leading-6 text-slate-500">Ask about Fahiz’s public projects, skills, services or professional background.</p><div className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">{suggestions.map((item)=><button className="button-secondary text-left" type="button" onClick={()=>setMessage(item)} key={item}>{item}</button>)}</div></div></div>}{messages.map((item,index)=><div className={`max-w-3xl whitespace-pre-wrap rounded-xl p-4 text-sm leading-7 ${item.role==='user'?'ml-auto bg-brand-600 text-white':'bg-slate-100 dark:bg-ink-800'}`} key={item.interaction_id||index}>{item.content}{item.sources?.length>0&&<div className="mt-4 border-t border-slate-300 pt-3 dark:border-slate-700"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Public sources</p><div className="mt-2 flex flex-wrap gap-2">{item.sources.map((source)=><a className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-brand-600" href={source.url} key={source.url}>{source.title}</a>)}</div></div>}{item.interaction_id&&<div className="mt-3 flex items-center gap-2"><span className="text-xs text-slate-500">Helpful?</span><button aria-label="Helpful" aria-pressed={item.rating==='helpful'} className="rounded p-2 hover:bg-white dark:hover:bg-ink-900" onClick={()=>feedback(item,'helpful')}><ThumbsUp size={15}/></button><button aria-label="Not helpful" aria-pressed={item.rating==='not_helpful'} className="rounded p-2 hover:bg-white dark:hover:bg-ink-900" onClick={()=>feedback(item,'not_helpful')}><ThumbsDown size={15}/></button></div>}</div>)}{sending&&<div className="max-w-3xl rounded-xl bg-slate-100 p-4 text-sm text-slate-500 dark:bg-ink-800">Thinking…</div>}{error&&<p className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300" role="alert">{error}</p>}</div><form className="border-t border-slate-200 p-4 dark:border-slate-800" onSubmit={send}><TurnstileWidget key={captchaVersion} onToken={setCaptcha}/><div className="mt-2 flex gap-2"><textarea value={message} onChange={(event)=>setMessage(event.target.value)} required rows="2" maxLength="2000" placeholder="Ask Fahiz AI…" className="min-h-12 flex-1 resize-none rounded-lg border border-slate-300 bg-transparent p-3 dark:border-slate-700"/><button className="button-primary self-end px-4" disabled={sending||(captchaEnabled&&!captcha)} aria-label="Send message"><Send size={18}/><span className="hidden sm:inline">Send</span></button></div></form><p className="border-t border-slate-100 px-4 py-3 text-xs text-slate-500 dark:border-slate-800">Answers use public portfolio content only. AI can make mistakes; use the linked sources to verify details.</p></div></div>;
+const suggestions = [
+  "What projects has Fahiz built?",
+  "What are Fahiz’s strongest technical skills?",
+  "How can I contact Fahiz for a project?",
+];
+export default function PublicAiPage() {
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const [captcha, setCaptcha] = useState("");
+  const [captchaVersion, setCaptchaVersion] = useState(0);
+  async function send(event, text = message) {
+    event?.preventDefault();
+    const question = text.trim();
+    if (!question) return;
+    const history = messages
+      .slice(-6)
+      .map(({ role, content }) => ({ role, content }));
+    setMessages((items) => [...items, { role: "user", content: question }]);
+    setMessage("");
+    setSending(true);
+    setError("");
+    try {
+      const { data } = await api.post("/public-ai/chat", {
+        message: question,
+        history,
+        captcha_token: captcha,
+      });
+      setMessages((items) => [...items, { ...data.data, question }]);
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          "Fahiz AI is temporarily unavailable.",
+      );
+    } finally {
+      setSending(false);
+      setCaptcha("");
+      setCaptchaVersion((value) => value + 1);
+    }
+  }
+  async function feedback(item, rating) {
+    try {
+      await api.post("/public-ai/feedback", {
+        interaction_id: item.interaction_id,
+        rating,
+        question: item.question,
+        comment: "",
+      });
+      setMessages((items) =>
+        items.map((entry) =>
+          entry.interaction_id === item.interaction_id
+            ? { ...entry, rating }
+            : entry,
+        ),
+      );
+    } catch {
+      setError("Unable to save feedback right now.");
+    }
+  }
+  return (
+    <div className="container-page py-8 sm:py-12">
+      <div className="mx-auto max-w-5xl overflow-hidden rounded-xl border border-slate-200 bg-white shadow-soft dark:border-slate-800 dark:bg-ink-900">
+        <header className="flex items-center justify-between border-b border-slate-200 p-4 sm:p-5 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-lg bg-brand-50 text-brand-600 dark:bg-ink-800">
+              <Bot size={21} />
+            </span>
+            <div>
+              <h1 className="font-bold text-slate-950 dark:text-white">
+                Fahiz AI
+              </h1>
+              <p className="text-xs text-slate-500">Public AI assistant</p>
+            </div>
+          </div>
+          <button
+            className="button-secondary px-3"
+            onClick={() => {
+              setMessages([]);
+              setError("");
+            }}
+          >
+            <RotateCcw size={16} />
+            New chat
+          </button>
+        </header>
+        <div
+          className="min-h-[52vh] space-y-4 overflow-y-auto p-4 sm:p-6"
+          aria-live="polite"
+        >
+          {!messages.length && (
+            <div className="grid min-h-[38vh] place-items-center text-center">
+              <div>
+                <Bot className="mx-auto text-brand-600" size={36} />
+                <h2 className="mt-4 text-xl font-bold">How can I help?</h2>
+                <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                  Ask about Fahiz’s public projects, skills, services or
+                  professional background.
+                </p>
+                <div className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">
+                  {suggestions.map((item) => (
+                    <button
+                      className="button-secondary text-left"
+                      type="button"
+                      onClick={() => setMessage(item)}
+                      key={item}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+          {messages.map((item, index) => (
+            <div
+              className={`max-w-3xl whitespace-pre-wrap rounded-xl p-4 text-sm leading-7 ${item.role === "user" ? "ml-auto bg-brand-600 text-white" : "bg-slate-100 dark:bg-ink-800"}`}
+              key={item.interaction_id || index}
+            >
+              {item.content}
+              {item.sources?.length > 0 && (
+                <div className="mt-4 border-t border-slate-300 pt-3 dark:border-slate-700">
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                    Public sources
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {item.sources.map((source) => (
+                      <a
+                        className="rounded-full border border-slate-300 px-3 py-1 text-xs font-semibold text-brand-600"
+                        href={source.url}
+                        key={source.url}
+                      >
+                        {source.title}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {item.interaction_id && (
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-xs text-slate-500">Helpful?</span>
+                  <button
+                    aria-label="Helpful"
+                    aria-pressed={item.rating === "helpful"}
+                    className="rounded p-2 hover:bg-white dark:hover:bg-ink-900"
+                    onClick={() => feedback(item, "helpful")}
+                  >
+                    <ThumbsUp size={15} />
+                  </button>
+                  <button
+                    aria-label="Not helpful"
+                    aria-pressed={item.rating === "not_helpful"}
+                    className="rounded p-2 hover:bg-white dark:hover:bg-ink-900"
+                    onClick={() => feedback(item, "not_helpful")}
+                  >
+                    <ThumbsDown size={15} />
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+          {sending && (
+            <div className="max-w-3xl rounded-xl bg-slate-100 p-4 text-sm text-slate-500 dark:bg-ink-800">
+              Thinking…
+            </div>
+          )}
+          {error && (
+            <p
+              className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300"
+              role="alert"
+            >
+              {error}
+            </p>
+          )}
+        </div>
+        <form
+          className="border-t border-slate-200 p-4 dark:border-slate-800"
+          onSubmit={send}
+        >
+          <TurnstileWidget key={captchaVersion} onToken={setCaptcha} />
+          <div className="mt-2 flex gap-2">
+            <textarea
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              required
+              rows="2"
+              maxLength="2000"
+              placeholder="Ask Fahiz AI…"
+              className="min-h-12 flex-1 resize-none rounded-lg border border-slate-300 bg-transparent p-3 dark:border-slate-700"
+            />
+            <button
+              className="button-primary self-end px-4"
+              disabled={sending || (captchaEnabled && !captcha)}
+              aria-label="Send message"
+            >
+              <Send size={18} />
+              <span className="hidden sm:inline">Send</span>
+            </button>
+          </div>
+        </form>
+        <p className="border-t border-slate-100 px-4 py-3 text-xs text-slate-500 dark:border-slate-800">
+          Answers use public portfolio content only. AI can make mistakes; use
+          the linked sources to verify details.
+        </p>
+      </div>
+    </div>
+  );
 }

@@ -1,14 +1,183 @@
-import { Check, ExternalLink, Pencil, Plus, Trash2, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { api } from '../services/api';
+import { Check, ExternalLink, Pencil, Plus, Trash2, X } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { api } from "../services/api";
 
-const empty={goal_id:'',title:'',url:'',notes:'',is_completed:false};
+const empty = {
+  goal_id: "",
+  title: "",
+  url: "",
+  notes: "",
+  is_completed: false,
+};
 export default function LearningResources({ goals }) {
-  const [items,setItems]=useState([]);const[draft,setDraft]=useState(empty);const[error,setError]=useState('');
-  const load=useCallback(async()=>{try{const{data}=await api.get('/learning/resources/all');setItems(data.data);setError('');}catch(err){setError(err.response?.data?.message||'Unable to load resources.');}},[]);
-  useEffect(()=>{load()},[load]);
-  async function save(e){e.preventDefault();const v=Object.fromEntries(new FormData(e.currentTarget));const payload={...v,goal_id:Number(v.goal_id),is_completed:Boolean(draft.is_completed)};try{if(draft.id)await api.put(`/learning/resources/${draft.id}`,payload);else await api.post('/learning/resources',payload);setDraft(empty);await load();}catch(err){setError(err.response?.data?.message||'Unable to save resource.');}}
-  async function toggle(item){await api.put(`/learning/resources/${item.id}`,{goal_id:item.goal_id,title:item.title,url:item.url||'',notes:item.notes||'',is_completed:!item.is_completed});load();}
-  async function remove(id){if(confirm('Delete this learning resource?')){await api.delete(`/learning/resources/${id}`);if(draft.id===id)setDraft(empty);load();}}
-  return <section className="surface mt-6 p-5"><h2 className="font-bold">{draft.id?'Edit learning resource':'Learning resources'}</h2>{error&&<p className="mt-3 text-sm text-red-600" role="alert">{error}</p>}<form className="mt-4 grid gap-3 md:grid-cols-4" onSubmit={save}><select name="goal_id" required defaultValue={draft.goal_id||''} key={`goal-${draft.id||'new'}`} className="min-h-11 rounded-lg border bg-transparent px-3"><option value="">Choose goal</option>{goals.map(g=><option value={g.id} key={g.id}>{g.title}</option>)}</select><input name="title" required defaultValue={draft.title} key={`title-${draft.id||'new'}`} placeholder="Resource title" className="min-h-11 rounded-lg border bg-transparent px-3"/><input name="url" type="url" defaultValue={draft.url||''} key={`url-${draft.id||'new'}`} placeholder="URL" className="min-h-11 rounded-lg border bg-transparent px-3"/><input name="notes" defaultValue={draft.notes||''} key={`notes-${draft.id||'new'}`} placeholder="Notes" className="min-h-11 rounded-lg border bg-transparent px-3"/><button className="button-primary">{draft.id?'Save resource':<><Plus size={16}/>Add resource</>}</button>{draft.id&&<button className="button-secondary" type="button" onClick={()=>setDraft(empty)}><X size={16}/>Cancel</button>}</form><div className="mt-4 divide-y dark:divide-slate-800">{items.map(item=><div className="flex items-center gap-3 py-3" key={item.id}><button className={`grid size-8 place-items-center rounded-full border ${item.is_completed?'bg-green-600 text-white':''}`} onClick={()=>toggle(item)} aria-label={item.is_completed?'Mark incomplete':'Mark complete'}>{item.is_completed&&<Check size={15}/>}</button><div className="min-w-0 flex-1"><p className={item.is_completed?'line-through text-slate-400':'font-medium'}>{item.title}</p><p className="text-xs text-slate-500">{item.goal}</p></div>{item.url&&<a href={item.url} target="_blank" rel="noreferrer" aria-label="Open resource"><ExternalLink size={17}/></a>}<button aria-label={`Edit ${item.title}`} onClick={()=>setDraft(item)}><Pencil size={17}/></button><button className="text-red-600" aria-label={`Delete ${item.title}`} onClick={()=>remove(item.id)}><Trash2 size={17}/></button></div>)}</div></section>;
+  const [items, setItems] = useState([]);
+  const [draft, setDraft] = useState(empty);
+  const [error, setError] = useState("");
+  const load = useCallback(async () => {
+    try {
+      const { data } = await api.get("/learning/resources/all");
+      setItems(data.data);
+      setError("");
+    } catch (err) {
+      setError(err.response?.data?.message || "Unable to load resources.");
+    }
+  }, []);
+  useEffect(() => {
+    load();
+  }, [load]);
+  async function save(e) {
+    e.preventDefault();
+    const v = Object.fromEntries(new FormData(e.currentTarget));
+    const payload = {
+      ...v,
+      goal_id: Number(v.goal_id),
+      is_completed: Boolean(draft.is_completed),
+    };
+    try {
+      if (draft.id) await api.put(`/learning/resources/${draft.id}`, payload);
+      else await api.post("/learning/resources", payload);
+      setDraft(empty);
+      await load();
+    } catch (err) {
+      setError(err.response?.data?.message || "Unable to save resource.");
+    }
+  }
+  async function toggle(item) {
+    await api.put(`/learning/resources/${item.id}`, {
+      goal_id: item.goal_id,
+      title: item.title,
+      url: item.url || "",
+      notes: item.notes || "",
+      is_completed: !item.is_completed,
+    });
+    load();
+  }
+  async function remove(id) {
+    if (confirm("Delete this learning resource?")) {
+      await api.delete(`/learning/resources/${id}`);
+      if (draft.id === id) setDraft(empty);
+      load();
+    }
+  }
+  return (
+    <section className="surface mt-6 p-5">
+      <h2 className="font-bold">
+        {draft.id ? "Edit learning resource" : "Learning resources"}
+      </h2>
+      {error && (
+        <p className="mt-3 text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      )}
+      <form className="mt-4 grid gap-3 md:grid-cols-4" onSubmit={save}>
+        <select
+          name="goal_id"
+          required
+          defaultValue={draft.goal_id || ""}
+          key={`goal-${draft.id || "new"}`}
+          className="min-h-11 rounded-lg border bg-transparent px-3"
+        >
+          <option value="">Choose goal</option>
+          {goals.map((g) => (
+            <option value={g.id} key={g.id}>
+              {g.title}
+            </option>
+          ))}
+        </select>
+        <input
+          name="title"
+          required
+          defaultValue={draft.title}
+          key={`title-${draft.id || "new"}`}
+          placeholder="Resource title"
+          className="min-h-11 rounded-lg border bg-transparent px-3"
+        />
+        <input
+          name="url"
+          type="url"
+          defaultValue={draft.url || ""}
+          key={`url-${draft.id || "new"}`}
+          placeholder="URL"
+          className="min-h-11 rounded-lg border bg-transparent px-3"
+        />
+        <input
+          name="notes"
+          defaultValue={draft.notes || ""}
+          key={`notes-${draft.id || "new"}`}
+          placeholder="Notes"
+          className="min-h-11 rounded-lg border bg-transparent px-3"
+        />
+        <button className="button-primary">
+          {draft.id ? (
+            "Save resource"
+          ) : (
+            <>
+              <Plus size={16} />
+              Add resource
+            </>
+          )}
+        </button>
+        {draft.id && (
+          <button
+            className="button-secondary"
+            type="button"
+            onClick={() => setDraft(empty)}
+          >
+            <X size={16} />
+            Cancel
+          </button>
+        )}
+      </form>
+      <div className="mt-4 divide-y dark:divide-slate-800">
+        {items.map((item) => (
+          <div className="flex items-center gap-3 py-3" key={item.id}>
+            <button
+              className={`grid size-8 place-items-center rounded-full border ${item.is_completed ? "bg-green-600 text-white" : ""}`}
+              onClick={() => toggle(item)}
+              aria-label={
+                item.is_completed ? "Mark incomplete" : "Mark complete"
+              }
+            >
+              {item.is_completed && <Check size={15} />}
+            </button>
+            <div className="min-w-0 flex-1">
+              <p
+                className={
+                  item.is_completed
+                    ? "line-through text-slate-400"
+                    : "font-medium"
+                }
+              >
+                {item.title}
+              </p>
+              <p className="text-xs text-slate-500">{item.goal}</p>
+            </div>
+            {item.url && (
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Open resource"
+              >
+                <ExternalLink size={17} />
+              </a>
+            )}
+            <button
+              aria-label={`Edit ${item.title}`}
+              onClick={() => setDraft(item)}
+            >
+              <Pencil size={17} />
+            </button>
+            <button
+              className="text-red-600"
+              aria-label={`Delete ${item.title}`}
+              onClick={() => remove(item.id)}
+            >
+              <Trash2 size={17} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }

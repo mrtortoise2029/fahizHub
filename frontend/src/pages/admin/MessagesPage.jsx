@@ -1,3 +1,121 @@
-import { Archive, MailOpen, Trash2 } from 'lucide-react';import { useCallback,useEffect,useState } from 'react';import { api } from '../../services/api';
-export default function MessagesPage(){const [items,setItems]=useState([]);const [selected,setSelected]=useState(null);const [error,setError]=useState('');const load=useCallback(async()=>{try{const {data}=await api.get('/messages');setItems(data.data)}catch(e){setError(e.response?.data?.message||'Unable to load messages.')}},[]);useEffect(()=>{load()},[load]);async function open(item){const {data}=await api.get(`/messages/${item.id}`);setSelected(data.data);if(item.status==='new'){await api.patch(`/messages/${item.id}/status`,{status:'read'});load()}}async function action(id,status){await api.patch(`/messages/${id}/status`,{status});setSelected(null);load()}async function remove(id){if(!confirm('Delete this message permanently?'))return;await api.delete(`/messages/${id}`);setSelected(null);load()}return <><h1 className="text-2xl font-bold">Messages</h1><p className="mt-1 text-sm text-slate-500">Contact messages sent from your public portfolio.</p>{error&&<p className="mt-4 text-red-600">{error}</p>}<div className="mt-6 grid gap-5 lg:grid-cols-[.8fr_1.2fr]"><section className="surface divide-y divide-slate-200 overflow-hidden dark:divide-slate-800">{items.length?items.map(item=><button className={`block w-full p-4 text-left hover:bg-slate-50 dark:hover:bg-ink-800 ${item.status==='new'?'font-semibold':''}`} onClick={()=>open(item)} key={item.id}><div className="flex justify-between gap-3"><span className="truncate">{item.name}</span><span className="shrink-0 text-xs text-slate-500">{new Date(item.created_at).toLocaleDateString()}</span></div><p className="mt-1 truncate text-sm text-slate-500">{item.subject}</p></button>):<p className="p-8 text-center text-sm text-slate-500">Your inbox is empty.</p>}</section><section className="surface min-h-64 p-5 sm:p-6">{selected?<><div className="flex flex-wrap justify-between gap-3"><div><h2 className="text-xl font-bold">{selected.subject}</h2><a className="text-sm text-brand-600" href={`mailto:${selected.email}`}>{selected.name} · {selected.email}</a></div><div className="flex"><button className="grid size-10 place-items-center" onClick={()=>action(selected.id,'read')} aria-label="Mark read"><MailOpen size={18}/></button><button className="grid size-10 place-items-center" onClick={()=>action(selected.id,'archived')} aria-label="Archive"><Archive size={18}/></button><button className="grid size-10 place-items-center text-red-600" onClick={()=>remove(selected.id)} aria-label="Delete"><Trash2 size={18}/></button></div></div><p className="mt-6 whitespace-pre-wrap leading-7 text-slate-600 dark:text-slate-300">{selected.message}</p></>:<p className="grid min-h-52 place-items-center text-sm text-slate-500">Select a message to read it.</p>}</section></div></>}
-
+import { Archive, MailOpen, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { api } from "../../services/api";
+export default function MessagesPage() {
+  const [items, setItems] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [error, setError] = useState("");
+  const load = useCallback(async () => {
+    try {
+      const { data } = await api.get("/messages");
+      setItems(data.data);
+    } catch (e) {
+      setError(e.response?.data?.message || "Unable to load messages.");
+    }
+  }, []);
+  useEffect(() => {
+    load();
+  }, [load]);
+  async function open(item) {
+    const { data } = await api.get(`/messages/${item.id}`);
+    setSelected(data.data);
+    if (item.status === "new") {
+      await api.patch(`/messages/${item.id}/status`, { status: "read" });
+      load();
+    }
+  }
+  async function action(id, status) {
+    await api.patch(`/messages/${id}/status`, { status });
+    setSelected(null);
+    load();
+  }
+  async function remove(id) {
+    if (!confirm("Delete this message permanently?")) return;
+    await api.delete(`/messages/${id}`);
+    setSelected(null);
+    load();
+  }
+  return (
+    <>
+      <h1 className="text-2xl font-bold">Messages</h1>
+      <p className="mt-1 text-sm text-slate-500">
+        Contact messages sent from your public portfolio.
+      </p>
+      {error && <p className="mt-4 text-red-600">{error}</p>}
+      <div className="mt-6 grid gap-5 lg:grid-cols-[.8fr_1.2fr]">
+        <section className="surface divide-y divide-slate-200 overflow-hidden dark:divide-slate-800">
+          {items.length ? (
+            items.map((item) => (
+              <button
+                className={`block w-full p-4 text-left hover:bg-slate-50 dark:hover:bg-ink-800 ${item.status === "new" ? "font-semibold" : ""}`}
+                onClick={() => open(item)}
+                key={item.id}
+              >
+                <div className="flex justify-between gap-3">
+                  <span className="truncate">{item.name}</span>
+                  <span className="shrink-0 text-xs text-slate-500">
+                    {new Date(item.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="mt-1 truncate text-sm text-slate-500">
+                  {item.subject}
+                </p>
+              </button>
+            ))
+          ) : (
+            <p className="p-8 text-center text-sm text-slate-500">
+              Your inbox is empty.
+            </p>
+          )}
+        </section>
+        <section className="surface min-h-64 p-5 sm:p-6">
+          {selected ? (
+            <>
+              <div className="flex flex-wrap justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-bold">{selected.subject}</h2>
+                  <a
+                    className="text-sm text-brand-600"
+                    href={`mailto:${selected.email}`}
+                  >
+                    {selected.name} · {selected.email}
+                  </a>
+                </div>
+                <div className="flex">
+                  <button
+                    className="grid size-10 place-items-center"
+                    onClick={() => action(selected.id, "read")}
+                    aria-label="Mark read"
+                  >
+                    <MailOpen size={18} />
+                  </button>
+                  <button
+                    className="grid size-10 place-items-center"
+                    onClick={() => action(selected.id, "archived")}
+                    aria-label="Archive"
+                  >
+                    <Archive size={18} />
+                  </button>
+                  <button
+                    className="grid size-10 place-items-center text-red-600"
+                    onClick={() => remove(selected.id)}
+                    aria-label="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+              <p className="mt-6 whitespace-pre-wrap leading-7 text-slate-600 dark:text-slate-300">
+                {selected.message}
+              </p>
+            </>
+          ) : (
+            <p className="grid min-h-52 place-items-center text-sm text-slate-500">
+              Select a message to read it.
+            </p>
+          )}
+        </section>
+      </div>
+    </>
+  );
+}
